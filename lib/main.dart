@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'routes/app_routes.dart';
-import 'data/user/providers/user_provider.dart';
-import 'pages/auth/auth_wrapper.dart';
+import 'core/routes/app_routes.dart';
+import 'features/user/data/providers/user_provider.dart';
+import 'features/auth/auth_wrapper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
