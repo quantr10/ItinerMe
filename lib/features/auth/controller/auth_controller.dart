@@ -53,21 +53,26 @@ class AuthController {
     final user = userCredential.user;
     if (user == null) throw Exception('No user returned');
 
-    final displayName =
-        user.displayName ??
-        user.email?.split('@').first ??
-        'User${user.uid.substring(0, 6)}';
+    final doc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final snap = await doc.get();
 
-    final userModel = UserModel(
-      id: user.uid,
-      name: displayName,
-      email: user.email ?? '',
-      avatarUrl: user.photoURL ?? '',
-      createdTripIds: const [],
-      savedTripIds: const [],
-    );
+    if (!snap.exists) {
+      final displayName =
+          user.displayName ??
+          user.email?.split('@').first ??
+          'User${user.uid.substring(0, 6)}';
 
-    await _userService.createOrUpdateUser(userModel);
+      final newUser = UserModel(
+        id: user.uid,
+        name: displayName,
+        email: user.email ?? '',
+        avatarUrl: user.photoURL ?? '',
+        createdTripIds: [],
+        savedTripIds: [],
+      );
+
+      await doc.set(newUser.toJson());
+    }
   }
 
   Future<void> signUpEmail({

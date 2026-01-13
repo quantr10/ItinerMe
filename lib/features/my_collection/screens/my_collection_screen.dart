@@ -120,16 +120,40 @@ class _MyCollectionScreenState extends State<MyCollectionScreen> {
                       context: context,
                       builder:
                           (_) => AlertDialog(
-                            title: const Text('Delete Trip'),
+                            backgroundColor: Colors.white,
+                            title: const Text(
+                              'Delete Trip',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: AppTheme.largeFontSize,
+                              ),
+                            ),
                             content: const Text(
                               'Are you sure you want to permanently delete this trip?',
                             ),
                             actions: [
                               TextButton(
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      AppTheme.borderRadius,
+                                    ),
+                                  ),
+                                ),
                                 onPressed: () => Navigator.pop(context, false),
                                 child: const Text('Cancel'),
                               ),
                               ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.errorColor,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      AppTheme.borderRadius,
+                                    ),
+                                  ),
+                                ),
                                 onPressed: () => Navigator.pop(context, true),
                                 child: const Text('Delete'),
                               ),
@@ -218,11 +242,11 @@ class _MyCollectionScreenState extends State<MyCollectionScreen> {
                           builder: (context, setLocalState) {
                             return AlertDialog(
                               backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  AppTheme.borderRadius,
-                                ),
-                              ),
+                              // shape: RoundedRectangleBorder(
+                              //   borderRadius: BorderRadius.circular(
+                              //     AppTheme.borderRadius,
+                              //   ),
+                              // ),
                               title: const Text(
                                 'Duplicate Trip',
                                 style: TextStyle(
@@ -230,30 +254,56 @@ class _MyCollectionScreenState extends State<MyCollectionScreen> {
                                   fontSize: AppTheme.largeFontSize,
                                 ),
                               ),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  TextField(
-                                    controller: controller,
-                                    autofocus: true,
-                                    onChanged: (v) {
-                                      setLocalState(() {
-                                        isValid = v.trim().isNotEmpty;
-                                      });
-                                    },
-                                    decoration: AppTheme.inputDecoration(
-                                      'New Trip Name',
+                              insetPadding: AppTheme.largePadding,
+                              content: SizedBox(
+                                // mainAxisSize: MainAxisSize.min,
+                                height: AppTheme.fieldHeight,
+                                child: TextField(
+                                  controller: controller,
+                                  autofocus: true,
+                                  onChanged: (v) {
+                                    setLocalState(() {
+                                      isValid = v.trim().isNotEmpty;
+                                    });
+                                  },
+                                  decoration: AppTheme.inputDecoration(
+                                    'New Trip Name',
+                                    onClear: () => _searchController.clear(),
+                                    prefixIcon: const Icon(
+                                      Icons.search,
+                                      color: AppTheme.primaryColor,
+                                      size: AppTheme.largeFontSize,
                                     ),
                                   ),
-                                ],
+                                  style: const TextStyle(
+                                    fontSize: AppTheme.defaultFontSize,
+                                  ),
+                                ),
                               ),
                               actions: [
                                 TextButton(
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.black,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        AppTheme.borderRadius,
+                                      ),
+                                    ),
+                                  ),
                                   onPressed:
                                       () => Navigator.pop(dialogContext, null),
                                   child: const Text('Cancel'),
                                 ),
                                 ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppTheme.primaryColor,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        AppTheme.borderRadius,
+                                      ),
+                                    ),
+                                  ),
                                   onPressed:
                                       isValid
                                           ? () => Navigator.pop(

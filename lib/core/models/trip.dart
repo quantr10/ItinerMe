@@ -75,4 +75,32 @@ class Trip {
             .map((e) => ItineraryDay.fromJson(e))
             .toList(),
   );
+
+  Trip copyWith({
+    String? id,
+    String? name,
+    String? location,
+    String? coverImageUrl,
+    int? budget,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? transportation,
+    List<String>? interests,
+    List<MustVisitPlace>? mustVisitPlaces,
+    List<ItineraryDay>? itinerary,
+  }) {
+    return Trip(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      location: location ?? this.location,
+      coverImageUrl: coverImageUrl ?? this.coverImageUrl,
+      budget: budget ?? this.budget,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      transportation: transportation ?? this.transportation,
+      interests: interests ?? this.interests,
+      mustVisitPlaces: mustVisitPlaces ?? this.mustVisitPlaces,
+      itinerary: itinerary ?? this.itinerary,
+    );
+  }
 }

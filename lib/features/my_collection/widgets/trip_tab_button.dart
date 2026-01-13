@@ -18,7 +18,7 @@ class TripTabButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        height: 44,
+        height: AppTheme.fieldHeight,
         decoration: BoxDecoration(
           color: selected ? AppTheme.primaryColor : Colors.white,
           borderRadius: BorderRadius.circular(8),

@@ -15,8 +15,8 @@ class UserService {
       await doc.update({
         'name': user.name,
         'email': user.email,
-        'createdTripIds': user.createdTripIds,
-        'savedTripIds': user.savedTripIds,
+        // 'createdTripIds': user.createdTripIds,
+        // 'savedTripIds': user.savedTripIds,
       });
     } else {
       // New user → set full

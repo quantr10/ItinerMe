@@ -1,17 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:itinerme/core/utils/snackbar_helper.dart';
-import 'package:itinerme/features/dashboard/controller/dashboard_controller.dart';
-import 'package:itinerme/features/dashboard/dashboard_enums.dart';
-import 'package:itinerme/features/dashboard/state/dashboard_state.dart';
-import 'package:itinerme/features/dashboard/widgets/dashboard_search_bar.dart';
-import 'package:itinerme/features/dashboard/widgets/dashboard_sort_bar.dart';
-import 'package:itinerme/features/dashboard/widgets/empty_dashboard_state.dart';
-import 'package:itinerme/core/theme/app_theme.dart';
-import 'package:itinerme/core/widgets/main_scaffold.dart';
 import 'package:intl/intl.dart';
-import 'package:itinerme/features/dashboard/widgets/dashboard_trip_card.dart';
+
+import '../../../core/utils/snackbar_helper.dart';
+import '../../../core/widgets/main_scaffold.dart';
+import '../../../core/theme/app_theme.dart';
+
+import '../controller/dashboard_controller.dart';
+import '../state/dashboard_state.dart';
+import '../dashboard_enums.dart';
+
+import '../widgets/dashboard_search_bar.dart';
+import '../widgets/dashboard_sort_bar.dart';
+import '../widgets/empty_dashboard_state.dart';
+import '../widgets/dashboard_trip_card.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});

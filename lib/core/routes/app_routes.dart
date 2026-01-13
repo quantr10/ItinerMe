@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../features/my_collection/screens/my_collection_screen.dart';
-import '../../features/create_trip/screen/create_trip_screen.dart';
+import '../../features/create_trip/screens/create_trip_screen.dart';
 import '../../features/account/screen/account_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/signup_screen.dart';

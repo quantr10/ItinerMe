@@ -23,12 +23,14 @@ class TripSearchBar extends StatelessWidget {
         height: AppTheme.fieldHeight,
         child: TextField(
           controller: controller,
+          autofocus: true,
           onChanged: onChanged,
           decoration: AppTheme.inputDecoration(
             'Search trips and locations...',
             onClear: () => controller.clear(),
             prefixIcon: const Icon(Icons.search, color: AppTheme.primaryColor),
           ),
+          style: const TextStyle(fontSize: AppTheme.defaultFontSize),
         ),
       ),
     );
