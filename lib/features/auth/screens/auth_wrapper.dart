@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'login_screen.dart';
+
+import '../../../core/theme/app_theme.dart';
 import '../../dashboard/screens/dashboard_screen.dart';
 import '../../user/providers/user_provider.dart';
 
@@ -29,7 +31,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator(color: Colors.white)),
+            body: Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppTheme.primaryColor,
+                ),
+              ),
+            ),
           );
         }
 

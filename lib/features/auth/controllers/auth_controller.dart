@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:itinerme/features/user/services/user_service.dart';
-import 'package:itinerme/core/models/user.dart';
+
+import '../../user/services/user_service.dart';
+import '../../../core/models/user.dart';
 
 class AuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;

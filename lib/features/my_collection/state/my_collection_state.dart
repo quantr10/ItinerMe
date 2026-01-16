@@ -1,4 +1,5 @@
 import 'package:itinerme/core/models/trip.dart';
+import '../../../core/enums/tab_enum.dart';
 
 class MyCollectionState {
   final List<Trip> createdTrips;
@@ -6,7 +7,7 @@ class MyCollectionState {
   final List<Trip> displayedTrips;
   final bool isLoading;
   final bool isSearching;
-  final bool showingMyTrips;
+  final CollectionTab currentTab;
 
   const MyCollectionState({
     this.createdTrips = const [],
@@ -14,7 +15,7 @@ class MyCollectionState {
     this.displayedTrips = const [],
     this.isLoading = true,
     this.isSearching = false,
-    this.showingMyTrips = true,
+    this.currentTab = CollectionTab.myTrips,
   });
 
   MyCollectionState copyWith({
@@ -23,7 +24,7 @@ class MyCollectionState {
     List<Trip>? displayedTrips,
     bool? isLoading,
     bool? isSearching,
-    bool? showingMyTrips,
+    CollectionTab? currentTab,
   }) {
     return MyCollectionState(
       createdTrips: createdTrips ?? this.createdTrips,
@@ -31,7 +32,7 @@ class MyCollectionState {
       displayedTrips: displayedTrips ?? this.displayedTrips,
       isLoading: isLoading ?? this.isLoading,
       isSearching: isSearching ?? this.isSearching,
-      showingMyTrips: showingMyTrips ?? this.showingMyTrips,
+      currentTab: currentTab ?? this.currentTab,
     );
   }
 }

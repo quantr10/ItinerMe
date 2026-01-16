@@ -5,10 +5,10 @@ import 'package:intl/intl.dart';
 
 import '../../../core/widgets/main_scaffold.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/enums/sort_enums.dart';
 
 import '../controllers/dashboard_controller.dart';
 import '../state/dashboard_state.dart';
-import '../enums/dashboard_enums.dart';
 
 import '../widgets/dashboard_search_bar.dart';
 import '../widgets/dashboard_sort_bar.dart';

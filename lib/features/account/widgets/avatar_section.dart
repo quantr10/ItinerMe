@@ -22,7 +22,7 @@ class AvatarSection extends StatelessWidget {
           CircleAvatar(
             radius: 60,
             backgroundImage: avatar,
-            backgroundColor: AppTheme.secondaryColor.withOpacity(0.2),
+            backgroundColor: AppTheme.secondaryColor.withValues(alpha: 0.2),
             child:
                 avatar == null
                     ? const Icon(Icons.person, size: 60, color: Colors.white)
@@ -30,7 +30,11 @@ class AvatarSection extends StatelessWidget {
           ),
           if (isUploading)
             const Positioned.fill(
-              child: CircularProgressIndicator(color: Colors.white),
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppTheme.primaryColor,
+                ),
+              ),
             ),
           Positioned(
             bottom: 0,

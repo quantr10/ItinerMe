@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/enums/transportation_enums.dart';
 import '../../../core/models/destination.dart';
 import '../../../core/theme/app_theme.dart';
 import '../controller/trip_detail_controller.dart';
@@ -8,7 +9,7 @@ import '../controller/trip_detail_controller.dart';
 class TravelInfoBetween extends StatefulWidget {
   final Destination from;
   final Destination to;
-  final String initialTransport;
+  final TransportationType initialTransport;
   final TripDetailController controller;
 
   const TravelInfoBetween({
@@ -24,25 +25,20 @@ class TravelInfoBetween extends StatefulWidget {
 }
 
 class _TravelInfoBetweenState extends State<TravelInfoBetween> {
-  final Map<String, String> transportModes = {
-    'car': 'driving',
-    'motorbike': 'two_wheeler',
-    'bus/metro': 'transit',
-    'walking': 'walking',
-  };
+  final transportModes = TransportationType.values;
 
-  late List<String> options;
-  late String selectedTransport;
+  late List<TransportationType> options;
+  late TransportationType selectedTransport;
 
   Future<Map<String, String>?>? travelFuture;
-  final Map<String, Map<String, String>> transportInfo = {};
+  final Map<TransportationType, Map<String, String>> transportInfo = {};
   bool expanded = false;
 
   @override
   void initState() {
     super.initState();
-    options = transportModes.keys.toList();
-    selectedTransport = widget.initialTransport.toLowerCase();
+    options = TransportationType.values;
+    selectedTransport = widget.initialTransport;
   }
 
   Future<void> _fetchAll() async {
@@ -77,7 +73,7 @@ class _TravelInfoBetweenState extends State<TravelInfoBetween> {
         if (!snapshot.hasData) return const SizedBox.shrink();
 
         final info = snapshot.data!;
-        final mode = info['mode']!;
+        final mode = selectedTransport.googleMode;
         final mapsUrl =
             'https://www.google.com/maps/dir/?api=1&origin=${widget.from.latitude},${widget.from.longitude}&destination=${widget.to.latitude},${widget.to.longitude}&travelmode=$mode';
 
@@ -98,7 +94,7 @@ class _TravelInfoBetweenState extends State<TravelInfoBetween> {
                     child: Row(
                       children: [
                         Icon(
-                          widget.controller.getTransportIcon(mode),
+                          selectedTransport.icon,
                           size: AppTheme.largeIconFont,
                           color: AppTheme.hintColor,
                         ),
@@ -147,7 +143,6 @@ class _TravelInfoBetweenState extends State<TravelInfoBetween> {
                       options.map((t) {
                         final option = transportInfo[t];
                         if (option == null) return const SizedBox.shrink();
-                        final mode = transportModes[t]!;
                         final isSelected = t == selectedTransport;
 
                         return Expanded(
@@ -190,7 +185,7 @@ class _TravelInfoBetweenState extends State<TravelInfoBetween> {
                               child: Column(
                                 children: [
                                   Icon(
-                                    widget.controller.getTransportIcon(mode),
+                                    t.icon,
                                     color:
                                         isSelected
                                             ? AppTheme.primaryColor

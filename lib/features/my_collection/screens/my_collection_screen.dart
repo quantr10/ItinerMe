@@ -3,14 +3,15 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../../core/enums/tab_enum.dart';
 import '../../../core/widgets/main_scaffold.dart';
 import '../../../core/theme/app_theme.dart';
 
-import '../controller/my_collection_controller.dart';
+import '../controllers/my_collection_controller.dart';
 import '../state/my_collection_state.dart';
 
-import '../widgets/trip_tab_button.dart';
-import '../widgets/trip_search_bar.dart';
+import '../widgets/my_collection_tab_button.dart';
+import '../widgets/my_collection_search_bar.dart';
 import '../widgets/my_collection_trip_list.dart';
 
 class MyCollectionScreen extends StatefulWidget {
@@ -61,10 +62,15 @@ class _MyCollectionScreenState extends State<MyCollectionScreen> {
                 Expanded(
                   child: TripTabButton(
                     label: 'MY TRIPS',
-                    selected: _state.showingMyTrips,
+                    selected: _state.currentTab == CollectionTab.myTrips,
                     onTap:
                         () => setState(() {
-                          _state = _controller.toggleTab(_state, true);
+                          _searchController.clear();
+
+                          _state = _controller.toggleTab(
+                            _state,
+                            CollectionTab.myTrips,
+                          );
                         }),
                   ),
                 ),
@@ -72,10 +78,15 @@ class _MyCollectionScreenState extends State<MyCollectionScreen> {
                 Expanded(
                   child: TripTabButton(
                     label: 'SAVED',
-                    selected: !_state.showingMyTrips,
+                    selected: _state.currentTab == CollectionTab.saved,
                     onTap:
                         () => setState(() {
-                          _state = _controller.toggleTab(_state, false);
+                          _searchController.clear();
+
+                          _state = _controller.toggleTab(
+                            _state,
+                            CollectionTab.saved,
+                          );
                         }),
                   ),
                 ),

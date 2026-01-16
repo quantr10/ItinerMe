@@ -3,8 +3,13 @@ import '../../../core/theme/app_theme.dart';
 
 class EmptyTripState extends StatelessWidget {
   final bool showingMyTrips;
+  final bool isSearching;
 
-  const EmptyTripState({super.key, required this.showingMyTrips});
+  const EmptyTripState({
+    super.key,
+    required this.showingMyTrips,
+    required this.isSearching,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,13 +18,21 @@ class EmptyTripState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            showingMyTrips ? Icons.travel_explore : Icons.bookmark_border,
+            isSearching
+                ? Icons.search_off
+                : showingMyTrips
+                ? Icons.travel_explore
+                : Icons.bookmark_border,
             size: 60,
             color: AppTheme.secondaryColor,
           ),
           AppTheme.mediumSpacing,
           Text(
-            showingMyTrips ? 'No trips created yet' : 'No trips saved yet',
+            isSearching
+                ? 'No results found'
+                : showingMyTrips
+                ? 'No trips created yet'
+                : 'No trips saved yet',
             style: TextStyle(
               fontSize: AppTheme.largeFontSize,
               color: AppTheme.hintColor,
@@ -27,7 +40,9 @@ class EmptyTripState extends StatelessWidget {
           ),
           AppTheme.smallSpacing,
           Text(
-            showingMyTrips
+            isSearching
+                ? 'Try searching with a different keyword'
+                : showingMyTrips
                 ? 'Start planning your first trip!'
                 : 'Save trips to see them here',
             style: TextStyle(

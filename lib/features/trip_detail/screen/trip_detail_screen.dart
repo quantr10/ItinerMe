@@ -6,7 +6,6 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import '../../../core/models/trip.dart';
 import '../../../core/widgets/main_scaffold.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/utils/snackbar_helper.dart';
 import '../controller/trip_detail_controller.dart';
 import '../widgets/itinerary_day_section.dart';
 import '../widgets/trip_cover_header.dart';
@@ -150,9 +149,9 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   final ok = await controller.changeDateRange(newStart, newEnd);
                   if (ok) {
                     _syncDayKeys();
-                    SnackBarHelper.success('Date range updated');
+                    AppTheme.success('Date range updated');
                   } else {
-                    SnackBarHelper.error('Failed to update date');
+                    AppTheme.error('Failed to update date');
                   }
                 }
                 Navigator.of(context).pop();
@@ -298,7 +297,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                   ),
                   onPressed: () async {
                     if (selectedPrediction == null) {
-                      SnackBarHelper.error('Please select a place');
+                      AppTheme.error('Please select a place');
                       return;
                     }
                     final ok = await controller.addDestinationFromSearch(
@@ -307,9 +306,9 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                     );
 
                     if (ok) {
-                      SnackBarHelper.success('Destination added');
+                      AppTheme.success('Destination added');
                     } else {
-                      SnackBarHelper.error('Destination already exists');
+                      AppTheme.error('Destination already exists');
                     }
 
                     Navigator.pop(context);
@@ -373,9 +372,9 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                     Navigator.pop(context);
                     final ok = await controller.updateCoverFromDevice();
                     if (ok) {
-                      SnackBarHelper.success('Cover photo updated');
+                      AppTheme.success('Cover photo updated');
                     } else {
-                      SnackBarHelper.error('Failed to update cover photo');
+                      AppTheme.error('Failed to update cover photo');
                     }
                   },
                 ),
@@ -390,7 +389,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
       final photos = await controller.getTripPhotoReferences();
 
       if (photos.isEmpty) {
-        SnackBarHelper.error('No photos available for this location');
+        AppTheme.error('No photos available for this location');
         return;
       }
 
@@ -526,9 +525,9 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
                                     );
                                 Navigator.pop(context);
                                 if (ok) {
-                                  SnackBarHelper.success('Cover photo updated');
+                                  AppTheme.success('Cover photo updated');
                                 } else {
-                                  SnackBarHelper.error(
+                                  AppTheme.error(
                                     'Failed to update cover photo',
                                   );
                                 }
@@ -542,7 +541,7 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
             ),
       );
     } catch (e) {
-      SnackBarHelper.error('Error ${e.toString()}');
+      AppTheme.error('Error ${e.toString()}');
     }
   }
 

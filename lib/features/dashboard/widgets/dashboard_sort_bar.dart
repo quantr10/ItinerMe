@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
-import '../enums/dashboard_enums.dart';
+import '../../../core/enums/sort_enums.dart';
 
 class DashboardSortBar extends StatelessWidget {
   final SortOption option;

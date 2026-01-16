@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:itinerme/core/enums/transportation_enums.dart';
 import 'package:itinerme/core/models/itinerary_day.dart';
 import 'package:itinerme/core/models/must_visit_place.dart';
 
@@ -10,7 +11,7 @@ class Trip {
   int budget;
   DateTime startDate;
   DateTime endDate;
-  String transportation;
+  TransportationType transportation;
   List<String> interests;
   List<MustVisitPlace> mustVisitPlaces;
   List<ItineraryDay> itinerary;
@@ -44,7 +45,7 @@ class Trip {
     'budget': budget,
     'startDate': Timestamp.fromDate(startDate),
     'endDate': Timestamp.fromDate(endDate),
-    'transportation': transportation,
+    'transportation': transportation.name,
     'interests': interests,
     'mustVisitPlaces': mustVisitPlaces.map((e) => e.toJson()).toList(),
     'itinerary': itinerary.map((e) => e.toJson()).toList(),
@@ -64,7 +65,10 @@ class Trip {
         json['endDate'] is Timestamp
             ? (json['endDate'] as Timestamp).toDate()
             : DateTime.parse(json['endDate']),
-    transportation: json['transportation'],
+    transportation: TransportationType.values.firstWhere(
+      (e) => e.name == json['transportation'],
+      orElse: () => TransportationType.busMetro,
+    ),
     interests: List<String>.from(json['interests']),
     mustVisitPlaces:
         (json['mustVisitPlaces'] as List)
@@ -84,7 +88,7 @@ class Trip {
     int? budget,
     DateTime? startDate,
     DateTime? endDate,
-    String? transportation,
+    TransportationType? transportation,
     List<String>? interests,
     List<MustVisitPlace>? mustVisitPlaces,
     List<ItineraryDay>? itinerary,

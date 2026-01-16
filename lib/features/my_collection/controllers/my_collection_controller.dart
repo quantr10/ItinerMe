@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:itinerme/core/models/trip.dart';
 
+import '../../../core/enums/tab_enum.dart';
+import '../../../core/models/trip.dart';
 import '../state/my_collection_state.dart';
 
 class MyCollectionController {
@@ -35,15 +36,21 @@ class MyCollectionController {
     );
   }
 
-  MyCollectionState toggleTab(MyCollectionState state, bool showMyTrips) {
+  MyCollectionState toggleTab(MyCollectionState state, CollectionTab tab) {
+    final showingMyTrips = tab == CollectionTab.myTrips;
+
     return state.copyWith(
-      showingMyTrips: showMyTrips,
-      displayedTrips: showMyTrips ? state.createdTrips : state.savedTrips,
+      currentTab: tab,
+      displayedTrips: showingMyTrips ? state.createdTrips : state.savedTrips,
     );
   }
 
   MyCollectionState search(MyCollectionState state, String query) {
-    final base = state.showingMyTrips ? state.createdTrips : state.savedTrips;
+    final base =
+        state.currentTab == CollectionTab.myTrips
+            ? state.createdTrips
+            : state.savedTrips;
+
     final lower = query.toLowerCase();
 
     final filtered =
@@ -68,6 +75,14 @@ class MyCollectionController {
     await firestore.collection('users').doc(user.uid).update({
       'createdTripIds': FieldValue.arrayRemove([tripId]),
     });
+
+    // remove from all users' saved lists
+    final users = await firestore.collection('users').get();
+    for (final u in users.docs) {
+      await u.reference.update({
+        'savedTripIds': FieldValue.arrayRemove([tripId]),
+      });
+    }
   }
 
   Future<void> unsaveTrip(String tripId) async {

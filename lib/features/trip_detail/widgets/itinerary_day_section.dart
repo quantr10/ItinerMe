@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import '../../../core/models/itinerary_day.dart';
 import '../../../core/models/trip.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/utils/snackbar_helper.dart';
 import '../controller/trip_detail_controller.dart';
 import 'destination_card.dart';
 import 'travel_info_between.dart';
@@ -131,9 +130,9 @@ class ItineraryDaySection extends StatelessWidget {
 
                         final ok = await controller.deleteDay(dayIndex);
                         if (ok) {
-                          SnackBarHelper.success('All destinations removed');
+                          AppTheme.success('All destinations removed');
                         } else {
-                          SnackBarHelper.error('Failed to delete day');
+                          AppTheme.error('Failed to delete day');
                         }
                       },
                       borderRadius: BorderRadius.circular(
@@ -168,9 +167,9 @@ class ItineraryDaySection extends StatelessWidget {
                     onPressed: () async {
                       final ok = await controller.generateSingleDay(dayIndex);
                       if (ok) {
-                        SnackBarHelper.success('Itinerary generated');
+                        AppTheme.success('Itinerary generated');
                       } else {
-                        SnackBarHelper.error('Failed to generate itinerary');
+                        AppTheme.error('Failed to generate itinerary');
                       }
                     },
                     icon: const Icon(
@@ -275,11 +274,9 @@ class ItineraryDaySection extends StatelessWidget {
                           );
 
                           if (ok) {
-                            SnackBarHelper.success('Destination removed');
+                            AppTheme.success('Destination removed');
                           } else {
-                            SnackBarHelper.error(
-                              'Failed to remove destination',
-                            );
+                            AppTheme.error('Failed to remove destination');
                           }
                         },
                       ),

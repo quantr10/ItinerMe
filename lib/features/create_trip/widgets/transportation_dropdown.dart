@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../../../core/enums/transportation_enums.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class TransportationDropdown extends StatelessWidget {
-  final String? value;
-  final Function(String) onChanged;
+  final TransportationType? value;
+  final Function(TransportationType) onChanged;
 
   const TransportationDropdown({
     super.key,
@@ -11,26 +12,13 @@ class TransportationDropdown extends StatelessWidget {
     required this.onChanged,
   });
 
-  IconData _getIcon(String type) {
-    switch (type.toLowerCase()) {
-      case 'car':
-        return Icons.directions_car;
-      case 'bus/metro':
-        return Icons.directions_bus;
-      case 'motorbike':
-        return Icons.motorcycle;
-      default:
-        return Icons.directions;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final items = ['Bus/Metro', 'Car', 'Motorbike'];
+    final items = TransportationType.values;
 
     return SizedBox(
       height: AppTheme.fieldHeight,
-      child: DropdownButtonFormField<String>(
+      child: DropdownButtonFormField<TransportationType>(
         value: value,
         isExpanded: true,
         style: const TextStyle(fontSize: AppTheme.defaultFontSize),
@@ -49,16 +37,17 @@ class TransportationDropdown extends StatelessWidget {
                 child: Row(
                   children: [
                     SizedBox(
+                      //haha
                       width: 40,
                       child: Icon(
-                        _getIcon(t),
+                        t.icon,
                         color: AppTheme.primaryColor,
                         size: AppTheme.largeIconFont,
                       ),
                     ),
                     Expanded(
                       child: Text(
-                        t,
+                        t.label,
                         style: const TextStyle(
                           fontSize: AppTheme.defaultFontSize,
                           color: Colors.black,
@@ -69,9 +58,8 @@ class TransportationDropdown extends StatelessWidget {
                 ),
               );
             }).toList(),
-        onChanged: (v) {
-          if (v != null) onChanged(v);
-        },
+        onChanged: (v) => v != null ? onChanged(v) : null,
+
         dropdownColor: Colors.white,
         icon: const Icon(
           Icons.arrow_drop_down,

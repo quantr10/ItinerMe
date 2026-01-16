@@ -3,7 +3,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_place/google_place.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:itinerme/core/utils/snackbar_helper.dart';
+import 'package:itinerme/core/enums/transportation_enums.dart';
+import 'package:itinerme/core/theme/app_theme.dart';
+import 'package:itinerme/core/enums/interest_tag_enums.dart';
 
 import '../../../core/models/trip.dart';
 import '../../../core/models/must_visit_place.dart';
@@ -18,6 +20,7 @@ import 'package:itinerme/core/models/itinerary_day.dart';
 class CreateTripController extends ChangeNotifier {
   CreateTripState _state = const CreateTripState();
   CreateTripState get state => _state;
+
   static final GooglePlace googlePlace = GooglePlace(
     dotenv.env['GOOGLE_MAPS_API_KEY']!,
   );
@@ -46,7 +49,11 @@ class CreateTripController extends ChangeNotifier {
 
     final details = await googlePlace.details.get(prediction.placeId ?? '');
     final result = details?.result;
-    if (result == null) return;
+    if (result == null) {
+      _state = _state.copyWith(isLoading: false);
+      notifyListeners();
+      return;
+    }
 
     _state = _state.copyWith(
       selectedDestinationName: result.name,
@@ -114,31 +121,30 @@ class CreateTripController extends ChangeNotifier {
 
   // ---------------- INTERESTS ----------------
 
-  void searchInterests(String value, List<String> availableTags) {
-    final List<String> predictions =
+  void searchInterests(String value, List<InterestTag> availableTags) {
+    final lower = value.toLowerCase();
+
+    final predictions =
         value.isEmpty
-            ? <String>[]
+            ? <InterestTag>[]
             : availableTags
-                .where((t) => t.toLowerCase().contains(value.toLowerCase()))
+                .where((t) => t.label.toLowerCase().contains(lower))
                 .toList();
 
     _state = _state.copyWith(interestPredictions: predictions);
     notifyListeners();
   }
 
-  void addInterest(String interest) {
-    final trimmed = interest.trim();
-    if (trimmed.isEmpty) return;
-
-    final updated = List<String>.from(_state.interests);
-    if (!updated.contains(trimmed)) updated.add(trimmed);
+  void addInterest(InterestTag tag) {
+    final updated = List<InterestTag>.from(_state.interests);
+    if (!updated.contains(tag)) updated.add(tag);
 
     _state = _state.copyWith(interests: updated, interestPredictions: []);
     notifyListeners();
   }
 
-  void removeInterest(String interest) {
-    final updated = List<String>.from(_state.interests)..remove(interest);
+  void removeInterest(InterestTag tag) {
+    final updated = List<InterestTag>.from(_state.interests)..remove(tag);
     _state = _state.copyWith(interests: updated);
     notifyListeners();
   }
@@ -152,7 +158,7 @@ class CreateTripController extends ChangeNotifier {
 
   // ---------------- TRANSPORT ----------------
 
-  void setTransportation(String value) {
+  void setTransportation(TransportationType value) {
     _state = _state.copyWith(transportation: value);
     notifyListeners();
   }
@@ -192,7 +198,7 @@ class CreateTripController extends ChangeNotifier {
         startDate: _state.startDate!,
         endDate: _state.endDate!,
         transportation: _state.transportation!,
-        interests: _state.interests,
+        interests: _state.interests.map((e) => e.label).toList(),
         mustVisitPlaces: _state.mustVisitPlaces,
         itinerary: [],
       );
@@ -214,9 +220,9 @@ class CreateTripController extends ChangeNotifier {
       _state = const CreateTripState(submitSuccess: true);
       notifyListeners();
 
-      SnackBarHelper.success('Trip created successfully!');
+      AppTheme.success('Trip created successfully!');
     } catch (e) {
-      SnackBarHelper.error('Failed to create trip');
+      AppTheme.error('Failed to create trip');
     } finally {
       _state = _state.copyWith(isLoading: false);
       notifyListeners();
@@ -364,7 +370,7 @@ class CreateTripController extends ChangeNotifier {
   Start: ${trip.startDate.toIso8601String()}
   End: ${trip.endDate.toIso8601String()}
   Budget: ${trip.budget} USD
-  Transportation: ${trip.transportation}
+  Transportation: ${trip.transportation.label}
   Must-Visit Places: ${trip.mustVisitPlaces.map((p) => p.name).join(', ')}
   Interests: ${trip.interests.join(', ')}
 

@@ -27,7 +27,10 @@ class TripSearchBar extends StatelessWidget {
           onChanged: onChanged,
           decoration: AppTheme.inputDecoration(
             'Search trips and locations...',
-            onClear: () => controller.clear(),
+            onClear: () {
+              controller.clear();
+              onChanged('');
+            },
             prefixIcon: const Icon(Icons.search, color: AppTheme.primaryColor),
           ),
           style: const TextStyle(fontSize: AppTheme.defaultFontSize),

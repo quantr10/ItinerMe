@@ -1,16 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:itinerme/core/routes/app_routes.dart';
-import 'package:itinerme/core/theme/app_theme.dart';
-import 'package:itinerme/core/utils/snackbar_helper.dart';
-import 'package:itinerme/features/auth/controller/auth_controller.dart';
-import 'package:itinerme/features/auth/state/auth_state.dart';
-import 'package:itinerme/features/auth/widgets/auth_email_field.dart';
-import 'package:itinerme/features/auth/widgets/auth_google_button.dart';
-import 'package:itinerme/features/auth/widgets/auth_header.dart';
-import 'package:itinerme/features/auth/widgets/auth_password_field.dart';
-import 'package:itinerme/features/user/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../../../core/routes/app_routes.dart';
+import '../../../core/theme/app_theme.dart';
+
+import '../../user/providers/user_provider.dart';
+import '../controllers/auth_controller.dart';
+import '../state/auth_state.dart';
+import '../widgets/auth_email_field.dart';
+import '../widgets/auth_google_button.dart';
+import '../widgets/auth_header.dart';
+import '../widgets/auth_password_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -45,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     } on FirebaseAuthException {
-      SnackBarHelper.error('Login failed');
+      AppTheme.error('Login failed');
     } finally {
       if (mounted) {
         setState(() => _state = _state.copyWith(isLoading: false));
@@ -69,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     } on FirebaseAuthException {
-      SnackBarHelper.error('Google login failed');
+      AppTheme.error('Google login failed');
     } finally {
       if (mounted) {
         setState(() => _state = _state.copyWith(isLoading: false));
@@ -80,7 +81,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     if (_state.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+          ),
+        ),
+      );
     }
 
     return Scaffold(

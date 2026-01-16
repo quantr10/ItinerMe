@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:itinerme/core/models/trip.dart';
 
 import '../state/dashboard_state.dart';
-import '../enums/dashboard_enums.dart';
+import '../../../core/enums/sort_enums.dart';
 
 class DashboardController {
   final FirebaseFirestore firestore;

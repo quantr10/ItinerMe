@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:itinerme/core/enums/interest_tag_enums.dart';
 import 'package:provider/provider.dart';
 import 'package:google_place/google_place.dart';
 
@@ -6,7 +7,7 @@ import '../../../core/widgets/main_scaffold.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/must_visit_place.dart';
 
-import '../controller/create_trip_controller.dart';
+import '../controllers/create_trip_controller.dart';
 import '../widgets/date_range_picker.dart';
 import '../widgets/prediction_list.dart';
 import '../widgets/tag_chips.dart';
@@ -33,19 +34,7 @@ class _CreateTripView extends StatefulWidget {
 }
 
 class _CreateTripViewState extends State<_CreateTripView> {
-  static const List<String> availableTags = [
-    'Museums',
-    'Nature',
-    'Culture',
-    'Hidden Gems',
-    'Adventure Travel',
-    'Sightseeing',
-    'Buildings & Landmarks',
-    'Galleries',
-    'Local Food',
-    'Road Trip',
-  ];
-
+  static final List<InterestTag> availableTags = InterestTag.values;
   final _nameController = TextEditingController();
   final _destinationController = TextEditingController();
   final _budgetController = TextEditingController();

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/enums/tab_enum.dart';
 import '../../../core/models/trip.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/utils/snackbar_helper.dart';
 
-import '../controller/my_collection_controller.dart';
+import '../controllers/my_collection_controller.dart';
 import '../state/my_collection_state.dart';
-
-import 'collection_trip_card.dart';
+import 'my_collection_trip_card.dart';
 import 'empty_trip_state.dart';
 
 class MyCollectionTripList extends StatelessWidget {
@@ -28,11 +27,18 @@ class MyCollectionTripList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (state.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+        ),
+      );
     }
 
     if (state.displayedTrips.isEmpty) {
-      return EmptyTripState(showingMyTrips: state.showingMyTrips);
+      return EmptyTripState(
+        showingMyTrips: state.currentTab == CollectionTab.myTrips,
+        isSearching: state.isSearching,
+      );
     }
 
     return ListView.builder(
@@ -43,10 +49,13 @@ class MyCollectionTripList extends StatelessWidget {
         return TripCard(
           trip: trip,
           formatter: formatter,
-
+          mode:
+              state.currentTab == CollectionTab.myTrips
+                  ? TripCardMode.myTrips
+                  : TripCardMode.saved,
           // ===== DELETE (MY TRIPS) =====
           onDelete:
-              state.showingMyTrips
+              state.currentTab == CollectionTab.myTrips
                   ? () async {
                     final confirmed = await showDialog<bool>(
                       context: context,
@@ -114,26 +123,18 @@ class MyCollectionTripList extends StatelessWidget {
 
                     try {
                       await controller.deleteTrip(trip.id);
-                      SnackBarHelper.error('Trip deleted');
+                      AppTheme.error('Trip deleted');
                     } catch (_) {
-                      SnackBarHelper.error('Delete failed');
+                      AppTheme.error('Delete failed');
                     } finally {
-                      updateState(
-                        MyCollectionState(
-                          createdTrips: state.createdTrips,
-                          savedTrips: state.savedTrips,
-                          displayedTrips: state.displayedTrips,
-                          showingMyTrips: state.showingMyTrips,
-                          isLoading: false,
-                        ),
-                      );
+                      updateState(state.copyWith(isLoading: false));
                     }
                   }
                   : null,
 
           // ===== UNSAVE (SAVED TAB) =====
           onRemove:
-              !state.showingMyTrips
+              !(state.currentTab == CollectionTab.myTrips)
                   ? () async {
                     updateState(
                       state.copyWith(
@@ -150,16 +151,16 @@ class MyCollectionTripList extends StatelessWidget {
 
                     try {
                       await controller.unsaveTrip(trip.id);
-                      SnackBarHelper.error('Trip unsaved');
+                      AppTheme.error('Trip removed from saved');
                     } catch (_) {
-                      SnackBarHelper.error('Unsave failed');
+                      AppTheme.error('Unsave failed');
                     }
                   }
                   : null,
 
           // ===== COPY (SAVED TAB) =====
           onCopy:
-              !state.showingMyTrips
+              !(state.currentTab == CollectionTab.myTrips)
                   ? () async {
                     final newTripName = await _askCopyName(context, trip.name);
                     if (newTripName == null) return;
@@ -179,10 +180,10 @@ class MyCollectionTripList extends StatelessWidget {
                         ),
                       );
 
-                      SnackBarHelper.success('Trip copied');
+                      AppTheme.success('Trip copied');
                     } catch (_) {
                       updateState(state.copyWith(isLoading: false));
-                      SnackBarHelper.error('Copy failed');
+                      AppTheme.error('Copy failed');
                     }
                   }
                   : null,

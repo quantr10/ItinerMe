@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:itinerme/core/theme/app_theme.dart';
 
-import '../../../core/utils/snackbar_helper.dart';
 import '../controllers/dashboard_controller.dart';
 import '../state/dashboard_state.dart';
 import 'dashboard_trip_card.dart';
@@ -26,7 +26,11 @@ class DashboardTripList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (state.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+        ),
+      );
     }
 
     if (state.displayedTrips.isEmpty) {
@@ -53,14 +57,14 @@ class DashboardTripList extends StatelessWidget {
               updateState(state.copyWith(savedTripIds: updated));
 
               if (isSaved) {
-                SnackBarHelper.error('Trip unsaved');
+                AppTheme.error('Trip removed from saved');
               } else {
-                SnackBarHelper.success('Trip saved');
+                AppTheme.success('Trip saved');
               }
 
               onStateChanged();
             } catch (_) {
-              SnackBarHelper.error('Save failed');
+              AppTheme.error('Save failed');
             }
           },
         );

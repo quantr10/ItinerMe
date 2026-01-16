@@ -4,7 +4,7 @@ import '../../../core/theme/app_theme.dart';
 class EmptyDashboardState extends StatelessWidget {
   final bool isSearching;
 
-  const EmptyDashboardState({required this.isSearching});
+  const EmptyDashboardState({super.key, required this.isSearching});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class EmptyDashboardState extends StatelessWidget {
           Text(
             isSearching
                 ? 'Try searching with a different keyword'
-                : 'Start by creating your first trip!',
+                : 'Start planning your first trip!',
             style: TextStyle(
               fontSize: AppTheme.defaultFontSize,
               color: AppTheme.hintColor,

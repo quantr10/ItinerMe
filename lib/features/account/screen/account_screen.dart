@@ -8,7 +8,6 @@ import 'package:itinerme/core/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import 'package:itinerme/core/theme/app_theme.dart';
-import 'package:itinerme/core/utils/snackbar_helper.dart';
 import 'package:itinerme/core/widgets/main_scaffold.dart';
 
 import 'package:itinerme/features/user/providers/user_provider.dart';
@@ -53,9 +52,9 @@ class _AccountScreenState extends State<AccountScreen> {
         imageFile: File(file.path),
       );
       context.read<UserProvider>().updateUserAvatar(url);
-      SnackBarHelper.success('Profile updated');
+      AppTheme.success('Profile updated');
     } catch (_) {
-      SnackBarHelper.error('Upload failed');
+      AppTheme.error('Upload failed');
     } finally {
       setState(() => _state = _state.copyWith(isUploading: false));
     }
@@ -90,7 +89,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 context.read<UserProvider>().clearUser();
 
                 if (!mounted) return;
-                SnackBarHelper.success('Logged out successfully');
+                AppTheme.success('Logged out successfully');
 
                 await Future.delayed(const Duration(milliseconds: 500));
 

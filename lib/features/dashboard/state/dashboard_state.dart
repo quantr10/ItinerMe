@@ -1,5 +1,5 @@
 import 'package:itinerme/core/models/trip.dart';
-import '../enums/dashboard_enums.dart';
+import '../../../core/enums/sort_enums.dart';
 
 class DashboardState {
   final List<Trip> allTrips;

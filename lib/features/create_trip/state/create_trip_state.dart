@@ -1,16 +1,18 @@
 import 'package:google_place/google_place.dart';
+import 'package:itinerme/core/enums/transportation_enums.dart';
+import '../../../core/enums/interest_tag_enums.dart';
 import '../../../core/models/must_visit_place.dart';
 
 class CreateTripState {
-  final List<String> interests;
+  final List<InterestTag> interests;
   final List<MustVisitPlace> mustVisitPlaces;
   final List<AutocompletePrediction> destinationPredictions;
   final List<AutocompletePrediction> mustVisitPredictions;
-  final List<String> interestPredictions;
+  final List<InterestTag> interestPredictions;
 
   final DateTime? startDate;
   final DateTime? endDate;
-  final String? transportation;
+  final TransportationType? transportation;
   final bool isLoading;
 
   final LatLon? selectedDestinationCoordinates;
@@ -36,14 +38,14 @@ class CreateTripState {
   });
 
   CreateTripState copyWith({
-    List<String>? interests,
+    List<InterestTag>? interests,
     List<MustVisitPlace>? mustVisitPlaces,
     List<AutocompletePrediction>? destinationPredictions,
     List<AutocompletePrediction>? mustVisitPredictions,
-    List<String>? interestPredictions,
+    List<InterestTag>? interestPredictions,
     DateTime? startDate,
     DateTime? endDate,
-    String? transportation,
+    TransportationType? transportation,
     bool? isLoading,
     LatLon? selectedDestinationCoordinates,
     String? selectedDestinationName,

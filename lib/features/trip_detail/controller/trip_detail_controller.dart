@@ -11,6 +11,7 @@ import 'package:google_place/google_place.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/enums/transportation_enums.dart';
 import '../../../core/models/trip.dart';
 import '../../../core/models/destination.dart';
 import '../../../core/models/itinerary_day.dart';
@@ -19,8 +20,8 @@ import '../state/trip_detail_state.dart';
 
 class TripDetailController extends ChangeNotifier {
   final GooglePlace googlePlace;
-
   final Trip trip;
+  final Map<String, Map<String, String>> _travelCache = {};
 
   TripDetailState _state = const TripDetailState();
   TripDetailState get state => _state;
@@ -46,12 +47,12 @@ class TripDetailController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleExpand(String name) {
+  void toggleExpand(String placeId) {
     final updated = Set<String>.from(_state.expandedDestinations);
-    if (updated.contains(name)) {
-      updated.remove(name);
+    if (updated.contains(placeId)) {
+      updated.remove(placeId);
     } else {
-      updated.add(name);
+      updated.add(placeId);
     }
     _state = _state.copyWith(expandedDestinations: updated);
     notifyListeners();
@@ -93,68 +94,14 @@ class TripDetailController extends ChangeNotifier {
     }
   }
 
-  Future<bool> updateDateRange(DateTime start, DateTime end) async {
-    try {
-      final oldDays = trip.itinerary;
-      final oldLength = oldDays.length;
-      final newLength = end.difference(start).inDays + 1;
-
-      final newItinerary = List.generate(newLength, (i) {
-        final date = start.add(Duration(days: i));
-        if (i < oldLength) {
-          return ItineraryDay(
-            date: date,
-            destinations: oldDays[i].destinations,
-          );
-        } else {
-          return ItineraryDay(date: date, destinations: []);
-        }
-      });
-
-      trip.startDate = start;
-      trip.endDate = end;
-      trip.itinerary = newItinerary;
-
-      await FirebaseFirestore.instance.collection('trips').doc(trip.id).update({
-        'startDate': Timestamp.fromDate(start),
-        'endDate': Timestamp.fromDate(end),
-        'itinerary': newItinerary.map((e) => e.toJson()).toList(),
-      });
-      notifyListeners();
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  String mapTransportToMode(String transport) {
-    switch (transport.toLowerCase()) {
-      case 'car':
-        return 'driving';
-      case 'motorbike':
-        return 'two_wheeler';
-      case 'bus/metro':
-        return 'transit';
-      case 'walking':
-        return 'walking';
-      default:
-        return 'driving';
-    }
-  }
-
-  IconData getTransportIcon(String mode) {
-    switch (mode) {
-      case 'driving':
-        return Icons.directions_car;
-      case 'transit':
-        return Icons.directions_bus;
-      case 'walking':
-        return Icons.directions_walk;
-      case 'two_wheeler':
-        return Icons.motorcycle;
-      default:
-        return Icons.directions;
-    }
+  String _buildTravelKey({
+    required double oLat,
+    required double oLng,
+    required double dLat,
+    required double dLng,
+    required TransportationType mode,
+  }) {
+    return '$oLat,$oLng->$dLat,$dLng:${mode.name}';
   }
 
   Future<Map<String, String>?> getTravelInfo({
@@ -162,12 +109,29 @@ class TripDetailController extends ChangeNotifier {
     required double originLng,
     required double destLat,
     required double destLng,
-    required String preferredTransport,
+    required TransportationType preferredTransport,
   }) async {
-    final mode = mapTransportToMode(preferredTransport);
+    final key = _buildTravelKey(
+      oLat: originLat,
+      oLng: originLng,
+      dLat: destLat,
+      dLng: destLng,
+      mode: preferredTransport,
+    );
+
+    // ===== RETURN CACHE IF EXISTS =====
+    if (_travelCache.containsKey(key)) {
+      return _travelCache[key];
+    }
+
+    final mode = preferredTransport.googleMode;
 
     final url = Uri.parse(
-      'https://maps.googleapis.com/maps/api/directions/json?origin=$originLat,$originLng&destination=$destLat,$destLng&mode=$mode&key=${dotenv.env['GOOGLE_MAPS_API_KEY']}',
+      'https://maps.googleapis.com/maps/api/directions/json'
+      '?origin=$originLat,$originLng'
+      '&destination=$destLat,$destLng'
+      '&mode=$mode'
+      '&key=${dotenv.env['GOOGLE_MAPS_API_KEY']}',
     );
 
     try {
@@ -178,11 +142,16 @@ class TripDetailController extends ChangeNotifier {
       if (data['status'] != 'OK') return null;
 
       final leg = data['routes'][0]['legs'][0];
-      return {
-        'distance': leg['distance']['text'],
-        'duration': leg['duration']['text'],
-        'mode': mode,
+      final Map<String, String> result = {
+        'distance': leg['distance']['text'].toString(),
+        'duration': leg['duration']['text'].toString(),
+        'mode': mode.toString(),
       };
+
+      // ===== SAVE TO CACHE =====
+      _travelCache[key] = result;
+
+      return result;
     } catch (_) {
       return null;
     }

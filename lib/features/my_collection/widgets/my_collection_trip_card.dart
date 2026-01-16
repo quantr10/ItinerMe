@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:itinerme/core/models/trip.dart';
-import 'package:itinerme/features/trip_detail/screen/trip_detail_screen.dart';
-import 'package:itinerme/core/theme/app_theme.dart';
+
+import '../../trip_detail/screen/trip_detail_screen.dart';
+
+import '../../../core/models/trip.dart';
+import '../../../core/enums/tab_enum.dart';
+import '../../../core/theme/app_theme.dart';
 
 class TripCard extends StatelessWidget {
   final Trip trip;
   final DateFormat formatter;
+  final TripCardMode mode;
+
+  final VoidCallback? onDelete;
   final VoidCallback? onRemove;
   final VoidCallback? onCopy;
-  final VoidCallback? onDelete;
 
   const TripCard({
+    super.key,
     required this.trip,
     required this.formatter,
+    required this.mode,
+    this.onDelete,
     this.onRemove,
     this.onCopy,
-    this.onDelete,
-    super.key,
   });
 
   @override
@@ -133,21 +139,21 @@ class TripCard extends StatelessWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  if (onCopy != null)
+                                  if (mode == TripCardMode.saved) ...[
                                     _buildAction(
                                       Icons.copy,
                                       onCopy,
                                       tooltip: 'Duplicate trip',
                                     ),
-                                  const SizedBox(width: 4),
-                                  if (onRemove != null)
+                                    const SizedBox(width: 4),
                                     _buildAction(
                                       Icons.favorite,
                                       onRemove,
                                       color: AppTheme.errorColor,
                                       tooltip: 'Remove from saved',
-                                    )
-                                  else if (onDelete != null)
+                                    ),
+                                  ],
+                                  if (mode == TripCardMode.myTrips)
                                     _buildAction(
                                       Icons.delete_outline,
                                       onDelete,

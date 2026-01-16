@@ -29,7 +29,7 @@ class DashboardSearchBar extends StatelessWidget {
             'Search trips and locations...',
             onClear: () {
               controller.clear();
-              // onChanged('');
+              onChanged('');
             },
             prefixIcon: const Icon(Icons.search, color: AppTheme.primaryColor),
           ),

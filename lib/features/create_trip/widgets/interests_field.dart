@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import '../../../../core/enums/interest_tag_enums.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class InterestsField extends StatelessWidget {
   final TextEditingController controller;
-  final List<String> availableTags;
-  final List<String> interestPredictions;
-  final List<String> interests;
+  final List<InterestTag> availableTags;
+  final List<InterestTag> interestPredictions;
+  final List<InterestTag> interests;
   final Function(String) onSearch;
-  final Function(String) onAdd;
-  final Function(String) onRemove;
+  final Function(InterestTag) onAdd;
+  final Function(InterestTag) onRemove;
 
   const InterestsField({
     super.key,
@@ -26,6 +27,7 @@ class InterestsField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // ===== input row =====
         Row(
           children: [
             Expanded(
@@ -50,10 +52,22 @@ class InterestsField extends StatelessWidget {
 
             ElevatedButton(
               onPressed: () {
-                if (controller.text.trim().isNotEmpty) {
-                  onAdd(controller.text);
-                  controller.clear();
+                final text = controller.text.trim();
+                if (text.isEmpty) return;
+
+                InterestTag? match;
+                try {
+                  match = availableTags.firstWhere(
+                    (t) => t.label.toLowerCase() == text.toLowerCase(),
+                  );
+                } catch (_) {
+                  match = null;
                 }
+
+                if (match == null) return;
+
+                onAdd(match);
+                controller.clear();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor,
@@ -67,6 +81,7 @@ class InterestsField extends StatelessWidget {
           ],
         ),
 
+        // ===== prediction dropdown =====
         if (interestPredictions.isNotEmpty)
           AnimatedContainer(
             duration: AppTheme.animationDuration,
@@ -81,29 +96,33 @@ class InterestsField extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: interestPredictions.length,
               itemBuilder: (context, index) {
-                final interest = interestPredictions[index];
+                final tag = interestPredictions[index];
                 return ListTile(
-                  leading: Icon(Icons.label, color: AppTheme.primaryColor),
+                  leading: const Icon(
+                    Icons.label,
+                    color: AppTheme.primaryColor,
+                  ),
                   title: Text(
-                    interest,
-                    style: TextStyle(
+                    tag.label, // ✅ enum → label
+                    style: const TextStyle(
                       fontSize: AppTheme.defaultFontSize,
                       color: Colors.black,
                     ),
                   ),
-                  onTap: () => onAdd(interest),
+                  onTap: () => onAdd(tag),
                 );
               },
             ),
           ),
 
+        // ===== selected chips =====
         if (interests.isNotEmpty) ...[
           AppTheme.smallSpacing,
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children:
-                interests.map((interest) {
+                interests.map((tag) {
                   return Container(
                     height: 24,
                     decoration: BoxDecoration(
@@ -119,16 +138,16 @@ class InterestsField extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            interest,
-                            style: TextStyle(
+                            tag.label, // ✅ enum → label
+                            style: const TextStyle(
                               fontSize: AppTheme.defaultFontSize,
                               color: Colors.white,
                             ),
                           ),
                           const SizedBox(width: 6),
                           GestureDetector(
-                            onTap: () => onRemove(interest),
-                            child: Icon(
+                            onTap: () => onRemove(tag),
+                            child: const Icon(
                               Icons.close,
                               size: AppTheme.mediumIconFont,
                               color: Colors.white,

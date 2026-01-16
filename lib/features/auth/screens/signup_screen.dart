@@ -3,10 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/utils/snackbar_helper.dart';
 
 import '../../user/providers/user_provider.dart';
-import '../controller/auth_controller.dart';
+import '../controllers/auth_controller.dart';
 import '../state/auth_state.dart';
 import '../widgets/auth_header.dart';
 import '../widgets/auth_email_field.dart';
@@ -47,7 +46,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     } catch (e) {
-      SnackBarHelper.error('Sign up failed');
+      AppTheme.error('Sign up failed');
     } finally {
       if (mounted) {
         setState(() => _state = _state.copyWith(isLoading: false));
@@ -65,7 +64,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     } catch (e) {
-      SnackBarHelper.error('Google sign up failed');
+      AppTheme.error('Google sign up failed');
     } finally {
       if (mounted) {
         setState(() => _state = _state.copyWith(isLoading: false));
@@ -79,7 +78,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
           ),
         ),
       );
