@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:itinerme/features/my_collection/widgets/delete_trip_dialog.dart';
+import 'package:itinerme/features/my_collection/widgets/copy_trip_dialog.dart';
 
 import '../../../core/enums/tab_enum.dart';
 import '../../../core/models/trip.dart';
@@ -14,14 +16,12 @@ class MyCollectionTripList extends StatelessWidget {
   final MyCollectionState state;
   final MyCollectionController controller;
   final DateFormat formatter;
-  final Function(MyCollectionState) updateState;
 
   const MyCollectionTripList({
     super.key,
     required this.state,
     required this.controller,
     required this.formatter,
-    required this.updateState,
   });
 
   @override
@@ -45,182 +45,54 @@ class MyCollectionTripList extends StatelessWidget {
               state.currentTab == CollectionTab.myTrips
                   ? TripCardMode.myTrips
                   : TripCardMode.saved,
-          // ===== DELETE (MY TRIPS) =====
+
+          // ===== DELETE =====
           onDelete:
               state.currentTab == CollectionTab.myTrips
                   ? () async {
-                    final confirmed = await showDialog<bool>(
-                      context: context,
-                      builder: (dialogContext) {
-                        return AlertDialog(
-                          backgroundColor: Colors.white,
-                          title: const Text(
-                            'Delete Trip',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: AppTheme.largeFontSize,
-                            ),
-                          ),
-                          insetPadding: AppTheme.largePadding,
-                          content: const Text(
-                            'Are you sure you want to permanently delete this trip?',
-                          ),
-                          actions: [
-                            AppTheme.dialogCancelButton(dialogContext),
-                            AppTheme.dialogPrimaryButton(
-                              context: dialogContext,
-                              label: 'Delete',
-                              onPressed:
-                                  () => Navigator.pop(dialogContext, true),
-                              isPrimary: false,
-                            ),
-                          ],
-                        );
-                      },
-                    );
-
+                    final confirmed = await showDeleteTripDialog(context);
                     if (confirmed != true) return;
-
-                    updateState(
-                      state.copyWith(
-                        isLoading: true,
-                        createdTrips:
-                            state.createdTrips
-                                .where((t) => t.id != trip.id)
-                                .toList(),
-                        displayedTrips:
-                            state.displayedTrips
-                                .where((t) => t.id != trip.id)
-                                .toList(),
-                      ),
-                    );
 
                     try {
                       await controller.deleteTrip(trip.id);
-                      AppTheme.error('Trip deleted');
+                      AppTheme.success('Trip deleted');
                     } catch (_) {
                       AppTheme.error('Delete failed');
-                    } finally {
-                      updateState(state.copyWith(isLoading: false));
                     }
                   }
                   : null,
 
-          // ===== UNSAVE (SAVED TAB) =====
+          // ===== UNSAVE =====
           onRemove:
-              !(state.currentTab == CollectionTab.myTrips)
+              state.currentTab == CollectionTab.saved
                   ? () async {
-                    updateState(
-                      state.copyWith(
-                        savedTrips:
-                            state.savedTrips
-                                .where((t) => t.id != trip.id)
-                                .toList(),
-                        displayedTrips:
-                            state.displayedTrips
-                                .where((t) => t.id != trip.id)
-                                .toList(),
-                      ),
-                    );
-
                     try {
                       await controller.unsaveTrip(trip.id);
-                      AppTheme.error('Trip removed from saved');
+                      AppTheme.success('Trip removed from saved');
                     } catch (_) {
                       AppTheme.error('Unsave failed');
                     }
                   }
                   : null,
 
-          // ===== COPY (SAVED TAB) =====
+          // ===== COPY =====
           onCopy:
-              !(state.currentTab == CollectionTab.myTrips)
+              state.currentTab == CollectionTab.saved
                   ? () async {
-                    final newTripName = await _askCopyName(context, trip.name);
+                    final newTripName = await showCopyTripDialog(
+                      context,
+                      trip.name,
+                    );
                     if (newTripName == null) return;
 
-                    updateState(state.copyWith(isLoading: true));
-
                     try {
-                      final newTrip = await controller.copyTrip(
-                        trip,
-                        customName: newTripName,
-                      );
-
-                      updateState(
-                        state.copyWith(
-                          createdTrips: [...state.createdTrips, newTrip],
-                          isLoading: false,
-                        ),
-                      );
-
+                      await controller.copyTrip(trip, newTripName);
                       AppTheme.success('Trip copied');
                     } catch (_) {
-                      updateState(state.copyWith(isLoading: false));
                       AppTheme.error('Copy failed');
                     }
                   }
                   : null,
-        );
-      },
-    );
-  }
-
-  // ===== dialog helper =====
-  Future<String?> _askCopyName(BuildContext context, String baseName) {
-    final textController = TextEditingController(text: '$baseName Copy');
-    bool valid = textController.text.trim().isNotEmpty;
-
-    return showDialog<String>(
-      context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setLocal) {
-            return AlertDialog(
-              backgroundColor: Colors.white,
-              title: const Text(
-                'Duplicate Trip',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: AppTheme.largeFontSize,
-                ),
-              ),
-              insetPadding: AppTheme.largePadding,
-              content: SizedBox(
-                height: AppTheme.fieldHeight,
-                child: TextField(
-                  controller: textController,
-                  autofocus: true,
-                  onChanged: (v) => setLocal(() => valid = v.trim().isNotEmpty),
-                  decoration: AppTheme.inputDecoration(
-                    'New Trip Name',
-                    onClear: () => textController.clear(),
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: AppTheme.primaryColor,
-                      size: AppTheme.largeFontSize,
-                    ),
-                  ),
-                  style: const TextStyle(fontSize: AppTheme.defaultFontSize),
-                ),
-              ),
-              actions: [
-                AppTheme.dialogCancelButton(dialogContext),
-                AppTheme.dialogPrimaryButton(
-                  context: dialogContext,
-                  label: 'Create Copy',
-                  onPressed:
-                      valid
-                          ? () => Navigator.pop(
-                            dialogContext,
-                            textController.text.trim(),
-                          )
-                          : null,
-                  isPrimary: true,
-                ),
-              ],
-            );
-          },
         );
       },
     );

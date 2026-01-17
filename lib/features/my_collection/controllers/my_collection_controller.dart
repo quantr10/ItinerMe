@@ -1,25 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:itinerme/core/enums/tab_enum.dart';
+import 'package:itinerme/core/models/trip.dart';
+import 'package:itinerme/features/my_collection/state/my_collection_state.dart';
 
-import '../../../core/enums/tab_enum.dart';
-import '../../../core/models/trip.dart';
-import '../state/my_collection_state.dart';
-
-class MyCollectionController {
+class MyCollectionController extends ChangeNotifier {
   final FirebaseFirestore firestore;
   final FirebaseAuth auth;
 
-  MyCollectionController({required this.firestore, required this.auth});
+  MyCollectionState _state = const MyCollectionState();
+  MyCollectionState get state => _state;
 
-  Future<MyCollectionState> loadTrips() async {
+  MyCollectionController({required this.firestore, required this.auth}) {
+    loadTrips();
+  }
+
+  Future<void> loadTrips() async {
+    _state = _state.copyWith(isLoading: true);
+    notifyListeners();
+
     final user = auth.currentUser;
-    if (user == null) return const MyCollectionState(isLoading: false);
+    if (user == null) {
+      _state = _state.copyWith(isLoading: false);
+      notifyListeners();
+      return;
+    }
 
     final userDoc = await firestore.collection('users').doc(user.uid).get();
-    final createdIds = List<String>.from(
-      userDoc.data()?['createdTripIds'] ?? [],
-    );
-    final savedIds = List<String>.from(userDoc.data()?['savedTripIds'] ?? []);
+    final createdIds = List<String>.from(userDoc['createdTripIds'] ?? []);
+    final savedIds = List<String>.from(userDoc['savedTripIds'] ?? []);
 
     final snap = await firestore.collection('trips').get();
     final trips =
@@ -28,28 +38,31 @@ class MyCollectionController {
     final createdTrips = trips.where((t) => createdIds.contains(t.id)).toList();
     final savedTrips = trips.where((t) => savedIds.contains(t.id)).toList();
 
-    return MyCollectionState(
+    _state = _state.copyWith(
       createdTrips: createdTrips,
       savedTrips: savedTrips,
       displayedTrips: createdTrips,
       isLoading: false,
     );
+    notifyListeners();
   }
 
-  MyCollectionState toggleTab(MyCollectionState state, CollectionTab tab) {
+  void toggleTab(CollectionTab tab) {
     final showingMyTrips = tab == CollectionTab.myTrips;
 
-    return state.copyWith(
+    _state = _state.copyWith(
       currentTab: tab,
-      displayedTrips: showingMyTrips ? state.createdTrips : state.savedTrips,
+      displayedTrips: showingMyTrips ? _state.createdTrips : _state.savedTrips,
+      isSearching: false,
     );
+    notifyListeners();
   }
 
-  MyCollectionState search(MyCollectionState state, String query) {
+  void search(String query) {
     final base =
-        state.currentTab == CollectionTab.myTrips
-            ? state.createdTrips
-            : state.savedTrips;
+        _state.currentTab == CollectionTab.myTrips
+            ? _state.createdTrips
+            : _state.savedTrips;
 
     final lower = query.toLowerCase();
 
@@ -62,20 +75,32 @@ class MyCollectionController {
             )
             .toList();
 
-    return state.copyWith(
+    _state = _state.copyWith(
       isSearching: query.isNotEmpty,
       displayedTrips: filtered,
     );
+    notifyListeners();
   }
 
   Future<void> deleteTrip(String tripId) async {
+    _state = _state.copyWith(isLoading: true);
+    notifyListeners();
+
     final user = auth.currentUser!;
-
     await firestore.collection('trips').doc(tripId).delete();
-
     await firestore.collection('users').doc(user.uid).update({
       'createdTripIds': FieldValue.arrayRemove([tripId]),
     });
+
+    final updatedCreated =
+        _state.createdTrips.where((t) => t.id != tripId).toList();
+
+    _state = _state.copyWith(
+      createdTrips: updatedCreated,
+      displayedTrips: updatedCreated,
+      isLoading: false,
+    );
+    notifyListeners();
   }
 
   Future<void> unsaveTrip(String tripId) async {
@@ -83,9 +108,21 @@ class MyCollectionController {
     await firestore.collection('users').doc(user.uid).update({
       'savedTripIds': FieldValue.arrayRemove([tripId]),
     });
+
+    final updatedSaved =
+        _state.savedTrips.where((t) => t.id != tripId).toList();
+
+    _state = _state.copyWith(
+      savedTrips: updatedSaved,
+      displayedTrips: updatedSaved,
+    );
+    notifyListeners();
   }
 
-  Future<Trip> copyTrip(Trip original, {required String customName}) async {
+  Future<void> copyTrip(Trip original, String customName) async {
+    _state = _state.copyWith(isLoading: true);
+    notifyListeners();
+
     final user = auth.currentUser!;
     final doc = firestore.collection('trips').doc();
 
@@ -104,11 +141,14 @@ class MyCollectionController {
     );
 
     await doc.set(newTrip.toJson());
-
     await firestore.collection('users').doc(user.uid).update({
       'createdTripIds': FieldValue.arrayUnion([doc.id]),
     });
 
-    return newTrip;
+    _state = _state.copyWith(
+      createdTrips: [..._state.createdTrips, newTrip],
+      isLoading: false,
+    );
+    notifyListeners();
   }
 }

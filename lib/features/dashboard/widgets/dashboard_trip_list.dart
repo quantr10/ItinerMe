@@ -11,16 +11,12 @@ class DashboardTripList extends StatelessWidget {
   final DashboardState state;
   final DashboardController controller;
   final DateFormat formatter;
-  final VoidCallback onStateChanged;
-  final Function(DashboardState) updateState;
 
   const DashboardTripList({
     super.key,
     required this.state,
     required this.controller,
     required this.formatter,
-    required this.onStateChanged,
-    required this.updateState,
   });
 
   @override
@@ -41,20 +37,10 @@ class DashboardTripList extends StatelessWidget {
           isSaved: isSaved,
           onToggleSave: () async {
             try {
-              final updated = await controller.saveTrip(
-                state.savedTripIds,
-                trip.id,
-              );
-
-              updateState(state.copyWith(savedTripIds: updated));
-
-              if (isSaved) {
-                AppTheme.error('Trip removed from saved');
-              } else {
-                AppTheme.success('Trip saved');
-              }
-
-              onStateChanged();
+              await controller.toggleSaveTrip(trip.id);
+              isSaved
+                  ? AppTheme.error('Trip removed from saved')
+                  : AppTheme.success('Trip saved');
             } catch (_) {
               AppTheme.error('Save failed');
             }

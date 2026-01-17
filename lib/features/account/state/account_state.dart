@@ -1,15 +1,13 @@
-import 'dart:io';
-
 class AccountState {
   final bool isUploading;
-  final File? imageFile;
+  final String? avatarUrl;
 
-  const AccountState({this.isUploading = false, this.imageFile});
+  const AccountState({this.isUploading = false, this.avatarUrl});
 
-  AccountState copyWith({bool? isUploading, File? imageFile}) {
+  AccountState copyWith({bool? isUploading, String? avatarUrl}) {
     return AccountState(
       isUploading: isUploading ?? this.isUploading,
-      imageFile: imageFile ?? this.imageFile,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
     );
   }
 }

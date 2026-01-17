@@ -2,49 +2,50 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/widgets/main_scaffold.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/enums/sort_enums.dart';
 
 import '../controllers/dashboard_controller.dart';
-import '../state/dashboard_state.dart';
 
 import '../widgets/dashboard_search_bar.dart';
 import '../widgets/dashboard_sort_bar.dart';
 import '../widgets/dashboard_trip_list.dart';
 
-class DashboardScreen extends StatefulWidget {
+class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create:
+          (_) => DashboardController(
+            firestore: FirebaseFirestore.instance,
+            auth: FirebaseAuth.instance,
+          ),
+      child: const _DashboardViewState(),
+    );
+  }
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
-  late final DashboardController _controller;
-  DashboardState _state = const DashboardState();
+class _DashboardViewState extends StatefulWidget {
+  const _DashboardViewState();
 
+  @override
+  State<_DashboardViewState> createState() => _DashboardViewStateState();
+}
+
+class _DashboardViewStateState extends State<_DashboardViewState> {
   final _searchController = TextEditingController();
   final _formatter = DateFormat('MMM d');
 
   @override
-  void initState() {
-    super.initState();
-    _controller = DashboardController(
-      firestore: FirebaseFirestore.instance,
-      auth: FirebaseAuth.instance,
-    );
-    _load();
-  }
-
-  Future<void> _load() async {
-    final state = await _controller.loadTrips();
-    if (mounted) setState(() => _state = state);
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final controller = context.watch<DashboardController>();
+    final state = controller.state;
+
     return Stack(
       children: [
         MainScaffold(
@@ -55,51 +56,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 DashboardSearchBar(
                   controller: _searchController,
-                  onChanged:
-                      (q) => setState(
-                        () => _state = _controller.search(_state, q),
-                      ),
+                  onChanged: controller.search,
                 ),
                 AppTheme.smallSpacing,
                 DashboardSortBar(
-                  option: _state.sortOption,
-                  order: _state.sortOrder,
-                  onSortChange:
-                      (o) => setState(
-                        () =>
-                            _state = _controller.sort(
-                              _state,
-                              o,
-                              _state.sortOrder,
-                            ),
-                      ),
+                  option: state.sortOption,
+                  order: state.sortOrder,
+                  onSortChange: (o) => controller.sort(o, state.sortOrder),
                   onToggleOrder:
-                      () => setState(
-                        () =>
-                            _state = _controller.sort(
-                              _state,
-                              _state.sortOption,
-                              _state.sortOrder == SortOrder.ascending
-                                  ? SortOrder.descending
-                                  : SortOrder.ascending,
-                            ),
+                      () => controller.sort(
+                        state.sortOption,
+                        state.sortOrder == SortOrder.ascending
+                            ? SortOrder.descending
+                            : SortOrder.ascending,
                       ),
                 ),
                 AppTheme.mediumSpacing,
                 Expanded(
                   child: DashboardTripList(
-                    state: _state,
-                    controller: _controller,
+                    state: state,
+                    controller: controller,
                     formatter: _formatter,
-                    onStateChanged: () => setState(() {}),
-                    updateState: (s) => setState(() => _state = s),
                   ),
                 ),
               ],
             ),
           ),
         ),
-        if (_state.isLoading) Positioned.fill(child: AppTheme.loadingScreen()),
+        if (state.isLoading) Positioned.fill(child: AppTheme.loadingScreen()),
       ],
     );
   }

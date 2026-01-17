@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:itinerme/features/trip_detail/widgets/confirm_clear_day_dialog.dart';
+import 'package:itinerme/features/trip_detail/widgets/confirm_remove_destination_dialog.dart';
 
 import '../../../core/models/itinerary_day.dart';
 import '../../../core/models/trip.dart';
@@ -74,36 +76,9 @@ class ItineraryDaySection extends StatelessWidget {
                     // DELETE DAY
                     InkWell(
                       onTap: () async {
-                        final confirm = await showDialog<bool>(
-                          context: context,
-                          builder: (dialogContext) {
-                            return AlertDialog(
-                              backgroundColor: Colors.white,
-                              title: const Text(
-                                'Clear this day',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: AppTheme.largeFontSize,
-                                ),
-                              ),
-                              insetPadding: AppTheme.largePadding,
-                              content: const Text(
-                                'This will remove all destinations from this day. Continue?',
-                              ),
-                              actions: [
-                                AppTheme.dialogCancelButton(dialogContext),
-                                AppTheme.dialogPrimaryButton(
-                                  context: dialogContext,
-                                  label: 'Clear',
-                                  onPressed:
-                                      () => Navigator.pop(dialogContext, true),
-                                  isPrimary: false,
-                                ),
-                              ],
-                            );
-                          },
+                        final confirm = await showConfirmClearDayDialog(
+                          context,
                         );
-
                         if (confirm != true) return;
 
                         final ok = await controller.deleteDay(dayIndex);
@@ -197,37 +172,8 @@ class ItineraryDaySection extends StatelessWidget {
                         onToggleExpand:
                             () => controller.toggleExpand(destination.name),
                         onRemove: (dayIdx, destIdx) async {
-                          final confirm = await showDialog<bool>(
-                            context: context,
-                            builder: (dialogContext) {
-                              return AlertDialog(
-                                backgroundColor: Colors.white,
-                                title: const Text(
-                                  'Remove destination',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: AppTheme.largeFontSize,
-                                  ),
-                                ),
-                                insetPadding: AppTheme.largePadding,
-                                content: const Text(
-                                  'Are you sure you want to remove this destination?',
-                                ),
-                                actions: [
-                                  AppTheme.dialogCancelButton(dialogContext),
-                                  AppTheme.dialogPrimaryButton(
-                                    context: dialogContext,
-                                    label: 'Remove',
-                                    onPressed:
-                                        () =>
-                                            Navigator.pop(dialogContext, true),
-                                    isPrimary: false,
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-
+                          final confirm =
+                              await showConfirmRemoveDestinationDialog(context);
                           if (confirm != true) return;
 
                           final ok = await controller.removeDestination(

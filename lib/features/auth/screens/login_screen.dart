@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,80 +6,36 @@ import '../../../core/theme/app_theme.dart';
 
 import '../../user/providers/user_provider.dart';
 import '../controllers/auth_controller.dart';
-import '../state/auth_state.dart';
 import '../widgets/auth_email_field.dart';
 import '../widgets/auth_google_button.dart';
 import '../widgets/auth_header.dart';
 import '../widgets/auth_password_field.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => AuthController(),
+      child: const _LoginView(),
+    );
+  }
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  final _controller = AuthController();
-  AuthState _state = const AuthState();
-
-  Future<void> _login() async {
-    setState(() => _state = _state.copyWith(isLoading: true));
-    try {
-      await _controller.loginEmail(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
-
-      await context.read<UserProvider>().fetchUser();
-
-      final user = context.read<UserProvider>().user;
-      if (user == null) {
-        await Future.delayed(const Duration(milliseconds: 200));
-        await context.read<UserProvider>().fetchUser();
-      }
-
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
-    } on FirebaseAuthException {
-      AppTheme.error('Login failed');
-    } finally {
-      if (mounted) {
-        setState(() => _state = _state.copyWith(isLoading: false));
-      }
-    }
-  }
-
-  Future<void> _loginGoogle() async {
-    setState(() => _state = _state.copyWith(isLoading: true));
-    try {
-      await _controller.loginWithGoogle();
-
-      await context.read<UserProvider>().fetchUser();
-
-      final user = context.read<UserProvider>().user;
-      if (user == null) {
-        await Future.delayed(const Duration(milliseconds: 200));
-        await context.read<UserProvider>().fetchUser();
-      }
-
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
-    } on FirebaseAuthException {
-      AppTheme.error('Google login failed');
-    } finally {
-      if (mounted) {
-        setState(() => _state = _state.copyWith(isLoading: false));
-      }
-    }
-  }
+class _LoginView extends StatelessWidget {
+  const _LoginView();
 
   @override
   Widget build(BuildContext context) {
-    if (_state.isLoading) {
+    final controller = context.watch<AuthController>();
+    final state = controller.state;
+    final userProvider = context.read<UserProvider>();
+
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+
+    if (state.isLoading) {
       return Positioned.fill(child: AppTheme.loadingScreen(overlay: true));
     }
 
@@ -93,28 +48,54 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const AuthHeader(),
 
-              AuthEmailField(controller: _emailController),
+              AuthEmailField(controller: emailController),
               AppTheme.smallSpacing,
+
               AuthPasswordField(
-                controller: _passwordController,
-                obscure: _state.obscurePassword,
-                onToggle:
-                    () => setState(
-                      () =>
-                          _state = _state.copyWith(
-                            obscurePassword: !_state.obscurePassword,
-                          ),
-                    ),
+                controller: passwordController,
+                obscure: state.obscurePassword,
+                onToggle: controller.togglePasswordVisibility,
               ),
 
               AppTheme.mediumSpacing,
+
               AppTheme.elevatedButton(
                 label: 'LOGIN',
-                onPressed: _login,
+                onPressed: () async {
+                  try {
+                    await controller.loginEmail(
+                      email: emailController.text,
+                      password: passwordController.text,
+                      userProvider: userProvider,
+                    );
+                    if (!context.mounted) return;
+                    Navigator.pushReplacementNamed(
+                      context,
+                      AppRoutes.dashboard,
+                    );
+                  } catch (_) {
+                    AppTheme.error('Login failed');
+                  }
+                },
                 isPrimary: true,
               ),
 
-              AuthGoogleButton(onPressed: _loginGoogle),
+              AuthGoogleButton(
+                onPressed: () async {
+                  try {
+                    await controller.loginWithGoogle(
+                      userProvider: userProvider,
+                    );
+                    if (!context.mounted) return;
+                    Navigator.pushReplacementNamed(
+                      context,
+                      AppRoutes.dashboard,
+                    );
+                  } catch (_) {
+                    AppTheme.error('Google login failed');
+                  }
+                },
+              ),
 
               AppTheme.largeSpacing,
 
@@ -122,23 +103,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   Navigator.pushReplacementNamed(context, AppRoutes.signup);
                 },
-                child: RichText(
-                  text: const TextSpan(
-                    text: "Don't have an account? ",
-                    style: TextStyle(
-                      fontSize: AppTheme.defaultFontSize,
-                      color: Colors.white,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Sign up',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+                child: const Text(
+                  "Don't have an account? Sign up",
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ],

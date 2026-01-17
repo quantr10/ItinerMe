@@ -6,75 +6,45 @@ import '../../../core/theme/app_theme.dart';
 
 import '../../user/providers/user_provider.dart';
 import '../controllers/auth_controller.dart';
-import '../state/auth_state.dart';
 import '../widgets/auth_header.dart';
 import '../widgets/auth_email_field.dart';
 import '../widgets/auth_password_field.dart';
 import '../widgets/auth_google_button.dart';
+import '../widgets/auth_username_field.dart';
 
-class SignUpScreen extends StatefulWidget {
+class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => AuthController(),
+      child: const _SignUpView(),
+    );
+  }
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _SignUpView extends StatefulWidget {
+  const _SignUpView();
+
+  @override
+  State<_SignUpView> createState() => _SignUpViewState();
+}
+
+class _SignUpViewState extends State<_SignUpView> {
   final _formKey = GlobalKey<FormState>();
 
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  final AuthController _controller = AuthController();
-  AuthState _state = const AuthState();
-
-  Future<void> _signUp() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => _state = _state.copyWith(isLoading: true));
-
-    try {
-      await _controller.signUpEmail(
-        email: _emailController.text,
-        password: _passwordController.text,
-        username: _usernameController.text,
-      );
-
-      await context.read<UserProvider>().fetchUser();
-      if (!mounted) return;
-
-      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
-    } catch (e) {
-      AppTheme.error('Sign up failed');
-    } finally {
-      if (mounted) {
-        setState(() => _state = _state.copyWith(isLoading: false));
-      }
-    }
-  }
-
-  Future<void> _signUpWithGoogle() async {
-    setState(() => _state = _state.copyWith(isLoading: true));
-
-    try {
-      await _controller.loginWithGoogle();
-      await context.read<UserProvider>().fetchUser();
-      if (!mounted) return;
-
-      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
-    } catch (e) {
-      AppTheme.error('Google sign up failed');
-    } finally {
-      if (mounted) {
-        setState(() => _state = _state.copyWith(isLoading: false));
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_state.isLoading) {
+    final controller = context.watch<AuthController>();
+    final state = controller.state;
+    final userProvider = context.read<UserProvider>();
+
+    if (state.isLoading) {
       return Positioned.fill(child: AppTheme.loadingScreen(overlay: true));
     }
 
@@ -89,71 +59,83 @@ class _SignUpScreenState extends State<SignUpScreen> {
               children: [
                 const AuthHeader(),
 
-                // Username
-                SizedBox(
-                  height: AppTheme.fieldHeight,
-                  child: TextFormField(
-                    controller: _usernameController,
-                    decoration: AppTheme.inputDecoration(
-                      'Username',
-                      onClear: () => _usernameController.clear(),
-                    ),
-                    style: const TextStyle(
-                      fontSize: AppTheme.defaultFontSize,
-                      color: Colors.black,
-                    ),
-                    validator:
-                        (v) =>
-                            v == null || v.trim().isEmpty
-                                ? 'Username required'
-                                : null,
-                  ),
-                ),
+                // ===== Username =====
+                AuthUsernameField(controller: _usernameController),
 
                 AppTheme.smallSpacing,
 
-                // Email
+                // ===== Email =====
                 AuthEmailField(controller: _emailController),
 
                 AppTheme.smallSpacing,
 
-                // Password
+                // ===== Password =====
                 AuthPasswordField(
                   controller: _passwordController,
-                  obscure: _state.obscurePassword,
-                  onToggle:
-                      () => setState(
-                        () =>
-                            _state = _state.copyWith(
-                              obscurePassword: !_state.obscurePassword,
-                            ),
-                      ),
+                  obscure: state.obscurePassword,
+                  onToggle: controller.togglePasswordVisibility,
                 ),
 
                 AppTheme.mediumSpacing,
 
-                // Sign up button
+                // ===== Sign Up Button =====
                 AppTheme.elevatedButton(
                   label: 'SIGN UP',
-                  onPressed: _signUp,
                   isPrimary: true,
+                  onPressed: () async {
+                    if (!_formKey.currentState!.validate()) return;
+
+                    try {
+                      await controller.signUpEmail(
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                        username: _usernameController.text,
+                        userProvider: userProvider,
+                      );
+
+                      if (!context.mounted) return;
+                      Navigator.pushReplacementNamed(
+                        context,
+                        AppRoutes.dashboard,
+                      );
+                    } catch (_) {
+                      AppTheme.error('Sign up failed');
+                    }
+                  },
                 ),
 
-                // Google sign up
-                AuthGoogleButton(onPressed: _signUpWithGoogle),
+                // ===== Google Sign Up =====
+                AuthGoogleButton(
+                  onPressed: () async {
+                    try {
+                      await controller.loginWithGoogle(
+                        userProvider: userProvider,
+                      );
+
+                      if (!context.mounted) return;
+                      Navigator.pushReplacementNamed(
+                        context,
+                        AppRoutes.dashboard,
+                      );
+                    } catch (_) {
+                      AppTheme.error('Google sign up failed');
+                    }
+                  },
+                ),
 
                 AppTheme.largeSpacing,
 
                 TextButton(
-                  onPressed:
-                      () => Navigator.pushReplacementNamed(
-                        context,
-                        AppRoutes.login,
-                      ),
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, AppRoutes.login);
+                  },
                   child: RichText(
                     text: const TextSpan(
                       text: 'Already have an account? ',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        fontSize: AppTheme.defaultFontSize,
+                        color: Colors.white,
+                      ),
                       children: [
                         TextSpan(
                           text: 'Login',

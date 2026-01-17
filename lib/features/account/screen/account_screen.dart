@@ -9,108 +9,96 @@ import '../../../core/routes/app_routes.dart';
 
 import '../../user/providers/user_provider.dart';
 import '../controller/account_controller.dart';
-import '../state/account_state.dart';
 import '../widgets/account_info_card.dart';
 import '../widgets/avatar_section.dart';
 
-class AccountScreen extends StatefulWidget {
+class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
 
   @override
-  State<AccountScreen> createState() => _AccountScreenState();
-}
-
-class _AccountScreenState extends State<AccountScreen> {
-  late final AccountController _controller;
-  AccountState _state = const AccountState();
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AccountController(
-      firestore: FirebaseFirestore.instance,
-      storage: FirebaseStorage.instance,
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create:
+          (_) => AccountController(
+            firestore: FirebaseFirestore.instance,
+            storage: FirebaseStorage.instance,
+          ),
+      child: const _AccountView(),
     );
   }
+}
 
-  Future<void> _pickAndUpload() async {
-    final user = context.read<UserProvider>().user;
-    if (user == null) return;
-
-    setState(() => _state = _state.copyWith(isUploading: true));
-
-    try {
-      final url = await _controller.pickAndUploadAvatar(user.id);
-
-      if (url == null) {
-        setState(() => _state = _state.copyWith(isUploading: false));
-        return;
-      }
-
-      context.read<UserProvider>().updateUserAvatar(url);
-      AppTheme.success('Profile updated');
-    } catch (_) {
-      AppTheme.error('Upload failed');
-    } finally {
-      setState(() => _state = _state.copyWith(isUploading: false));
-    }
-  }
+class _AccountView extends StatelessWidget {
+  const _AccountView();
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<UserProvider>().user;
+    final controller = context.watch<AccountController>();
+    final state = controller.state;
+    final userProvider = context.watch<UserProvider>();
+    final user = userProvider.user;
 
     return Stack(
       children: [
         MainScaffold(
           currentIndex: 3,
-          body: Stack(
-            children: [
-              Padding(
-                padding: AppTheme.defaultPadding,
-                child: Column(
-                  children: [
-                    AvatarSection(
-                      avatar:
-                          user?.avatarUrl.isNotEmpty == true
+          body: Padding(
+            padding: AppTheme.defaultPadding,
+            child: Column(
+              children: [
+                AvatarSection(
+                  avatar:
+                      state.avatarUrl != null
+                          ? NetworkImage(state.avatarUrl!)
+                          : (user?.avatarUrl.isNotEmpty == true
                               ? NetworkImage(user!.avatarUrl)
-                              : null,
-                      isUploading: _state.isUploading,
-                      onPickImage: _pickAndUpload,
-                    ),
-                    AppTheme.largeSpacing,
-                    AccountInfoCard(
-                      email: user?.email ?? '',
-                      name: user?.name ?? '',
-                    ),
-                    AppTheme.largeSpacing,
-                    AppTheme.elevatedButton(
-                      label: 'LOG OUT',
-                      isPrimary: false,
-                      onPressed: () async {
-                        await _controller.logout();
-                        context.read<UserProvider>().clearUser();
-
-                        if (!mounted) return;
-                        AppTheme.success('Logged out successfully');
-
-                        await Future.delayed(const Duration(milliseconds: 500));
-
-                        if (!mounted) return;
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          AppRoutes.dashboard,
-                          (route) => false,
+                              : null),
+                  isUploading: state.isUploading,
+                  onPickImage: () async {
+                    if (user == null) return;
+                    try {
+                      await controller.pickAndUploadAvatar(user.id);
+                      if (controller.state.avatarUrl != null) {
+                        userProvider.updateUserAvatar(
+                          controller.state.avatarUrl!,
                         );
-                      },
-                    ),
-                  ],
+                      }
+                      AppTheme.success('Profile updated');
+                    } catch (_) {
+                      AppTheme.error('Upload failed');
+                    }
+                  },
                 ),
-              ),
-            ],
+                AppTheme.largeSpacing,
+                AccountInfoCard(
+                  email: user?.email ?? '',
+                  name: user?.name ?? '',
+                ),
+                AppTheme.largeSpacing,
+                AppTheme.elevatedButton(
+                  label: 'LOG OUT',
+                  isPrimary: false,
+                  onPressed: () async {
+                    await controller.logout();
+                    userProvider.clearUser();
+
+                    AppTheme.success('Logged out successfully');
+
+                    await Future.delayed(const Duration(milliseconds: 400));
+
+                    if (!context.mounted) return;
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.dashboard,
+                      (route) => false,
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
-        if (_state.isUploading)
+        if (state.isUploading)
           Positioned.fill(child: AppTheme.loadingScreen(overlay: true)),
       ],
     );
