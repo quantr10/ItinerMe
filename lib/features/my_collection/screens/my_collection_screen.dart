@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:itinerme/core/repositories/trip_repository.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/repositories/trip_repository.dart';
 import '../../../core/enums/tab_enum.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/main_scaffold.dart';

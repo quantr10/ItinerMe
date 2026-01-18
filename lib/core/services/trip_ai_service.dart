@@ -14,13 +14,42 @@ class TripAIService {
     dotenv.env['GOOGLE_MAPS_API_KEY']!,
   );
 
-  // =========================================================
-  // =============== FULL TRIP ITINERARY =====================
-  // =========================================================
-
+  // GENERATE FULL ITINERARY
   Future<List<ItineraryDay>> generateItinerary(Trip trip) async {
-    final prompt = _buildPromptFromTrip(trip);
+    final prompt = '''
+You are a professional travel planner.
 
+Below is the trip information provided by a user. Your task is to generate a precise list of tourist attractions.
+
+Destination: ${trip.location}
+Start: ${trip.startDate.toIso8601String()}
+End: ${trip.endDate.toIso8601String()}
+Budget: ${trip.budget} USD
+Transportation: ${trip.transportation}
+Must-Visit Places: ${trip.mustVisitPlaces.map((p) => p.name).join(', ')}
+Interests: ${trip.interests.join(', ')}
+
+The list starts on ${trip.startDate.toIso8601String()} and ends on ${trip.endDate.toIso8601String()}.
+Each day should have 3-5 destinations and **fully utilized** with realistic visit durations.
+Prioritize must-visit places but **reorder them for optimal routing**.
+Use **precise place names**, avoiding nicknames or abbreviations.
+Add several places, relevant to: ${trip.interests.join(', ')}, and consider major attractions.
+Make each day's destinations **geographically logical**. Cluster nearby locations together and do not split adjacent spots into different days.
+
+Return a valid JSON array only, no explanation or markdown:
+[
+  {
+    "date": "YYYY-MM-DD",
+    "destinations": [
+      {
+        "name": "Place Name",
+        "description": "Detail description",
+        "durationMinutes": 90,
+      }
+    ]
+  }
+]
+''';
     final response = await _callOpenAI(prompt);
 
     final List<dynamic> jsonList = jsonDecode(response);
@@ -54,23 +83,31 @@ class TripAIService {
     return enrichedDays;
   }
 
-  // =========================================================
-  // =============== SMALL AI HELPERS ========================
-  // =========================================================
-
-  /// Generate simple list of attractions for a location
+  // GENERATE DAY PLAN (LIGHT AI)
   Future<List<Map<String, dynamic>>> generateDayPlan(String location) async {
     final prompt = '''
-Generate 3-5 tourist attractions in $location.
-Return JSON only:
-[{"name":"...", "description":"...", "durationMinutes":60}]
+You are a professional travel planner. Your task is to generate a precise list of tourist attractions in $location for one day.
+
+Each day should have 3-5 destinations and **fully utilized** with realistic visit durations.
+Prioritize must-visit places but **reorder them for optimal routing**.
+Use **precise place names**, avoiding nicknames or abbreviations.
+Make each day's destinations **geographically logical**. Cluster nearby locations together and do not split adjacent spots into different days.
+
+Return a valid JSON array only, no explanation or markdown:
+[
+  {
+    "name": "Place Name",
+    "description": "Detail description",
+    "durationMinutes": 90,
+  }
+]
 ''';
 
     final response = await _callOpenAI(prompt);
     return List<Map<String, dynamic>>.from(jsonDecode(response));
   }
 
-  /// Generate description + duration for one place
+  // GENERATE PLACE INFO
   Future<Map<String, dynamic>> generatePlaceInfo(
     String name,
     String address,
@@ -82,10 +119,7 @@ Return JSON only:
     return jsonDecode(response);
   }
 
-  // =========================================================
-  // =============== OPENAI CORE =============================
-  // =========================================================
-
+  // CALL OPENAI CORE
   Future<String> _callOpenAI(String prompt) async {
     final res = await http.post(
       Uri.parse('https://api.openai.com/v1/chat/completions'),
@@ -114,10 +148,7 @@ Return JSON only:
     return raw.replaceAll('```json', '').replaceAll('```', '').trim();
   }
 
-  // =========================================================
-  // =============== GOOGLE PLACE HELPERS ====================
-  // =========================================================
-
+  // ENRICH DESTINATION
   Future<Destination> _enrichDestination(
     dynamic d,
     Trip trip,
@@ -171,6 +202,7 @@ Return JSON only:
     );
   }
 
+  // GET TRIP LOCATION COORDINATES
   Future<Location?> _getTripLocationCoordinates(String locationName) async {
     final result = await _googlePlace.search.getTextSearch(locationName);
 
@@ -178,37 +210,5 @@ Return JSON only:
       return result!.results!.first.geometry!.location;
     }
     return null;
-  }
-
-  // =========================================================
-  // =============== PROMPT BUILDER ==========================
-  // =========================================================
-
-  String _buildPromptFromTrip(Trip trip) {
-    return '''
-You are a professional travel planner.
-
-Destination: ${trip.location}
-Start: ${trip.startDate.toIso8601String()}
-End: ${trip.endDate.toIso8601String()}
-Budget: ${trip.budget} USD
-Transportation: ${trip.transportation}
-Must-Visit Places: ${trip.mustVisitPlaces.map((p) => p.name).join(', ')}
-Interests: ${trip.interests.join(', ')}
-
-Return JSON array only:
-[
-  {
-    "date": "YYYY-MM-DD",
-    "destinations": [
-      {
-        "name": "Place Name",
-        "description": "Detail description",
-        "durationMinutes": 90
-      }
-    ]
-  }
-]
-''';
   }
 }

@@ -14,6 +14,7 @@ class TagChips<T> extends StatelessWidget {
     required this.onDelete,
   });
 
+  // GENERIC TAG CHIP LIST
   @override
   Widget build(BuildContext context) {
     if (tags.isEmpty) return const SizedBox();
@@ -41,7 +42,7 @@ class TagChips<T> extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         tagText,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: AppTheme.defaultFontSize,
                           color: Colors.white,
                         ),
@@ -49,7 +50,7 @@ class TagChips<T> extends StatelessWidget {
                       const SizedBox(width: 8),
                       GestureDetector(
                         onTap: () => onDelete(tag),
-                        child: Icon(
+                        child: const Icon(
                           Icons.close,
                           size: AppTheme.mediumIconFont,
                           color: Colors.white,

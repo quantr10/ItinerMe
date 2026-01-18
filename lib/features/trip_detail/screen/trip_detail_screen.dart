@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:itinerme/core/repositories/trip_repository.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/repositories/trip_repository.dart';
 import '../../../core/widgets/main_scaffold.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/trip.dart';
@@ -64,6 +64,7 @@ class _TripDetailViewState extends State<_TripDetailView> {
   final Map<int, GlobalKey> _dayKeys = {};
   int? _lastLength;
 
+  // SYNC GLOBALKEYS
   void _syncDayKeys(Trip trip) {
     if (_lastLength == trip.itinerary.length) return;
     _lastLength = trip.itinerary.length;
@@ -74,6 +75,7 @@ class _TripDetailViewState extends State<_TripDetailView> {
     }
   }
 
+  // SCROLL SMOOTHLY TO A SELECTED DAY SECTION
   void _scrollToDay(int index) {
     final keyContext = _dayKeys[index]?.currentContext;
     if (keyContext != null) {
@@ -103,6 +105,7 @@ class _TripDetailViewState extends State<_TripDetailView> {
               controller: _scrollController,
               child: Column(
                 children: [
+                  // ===== TRIP COVER HEADER =====
                   TripCoverHeader(
                     trip: trip,
                     canEdit: state.canEdit,
@@ -114,6 +117,7 @@ class _TripDetailViewState extends State<_TripDetailView> {
 
                   AppTheme.smallSpacing,
 
+                  // ===== TRIP INFO HEADER =====
                   TripInfoHeader(
                     trip: trip,
                     canEdit: state.canEdit,
@@ -134,6 +138,7 @@ class _TripDetailViewState extends State<_TripDetailView> {
 
                   AppTheme.mediumSpacing,
 
+                  // ===== ITINERARY DAY SECTIONS =====
                   ...trip.itinerary.asMap().entries.map((entry) {
                     final dayIndex = entry.key;
                     final day = entry.value;
@@ -159,6 +164,7 @@ class _TripDetailViewState extends State<_TripDetailView> {
           ),
         ),
 
+        // ===== LOADING OVERLAY =====
         if (state.isLoading)
           Positioned.fill(child: AppTheme.loadingScreen(overlay: true)),
       ],

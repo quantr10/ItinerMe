@@ -13,10 +13,7 @@ class TripRepository {
 
   TripRepository({required this.firestore, required this.auth});
 
-  // ====================================================
   // CREATE TRIP
-  // ====================================================
-
   Future<Trip> createTrip({
     required String tripName,
     required int budget,
@@ -69,20 +66,14 @@ class TripRepository {
     return trip;
   }
 
-  // ====================================================
-  // ITINERARY
-  // ====================================================
-
+  // ATTACH ITINERARY
   Future<void> attachItinerary(String tripId, List<ItineraryDay> days) async {
     await firestore.collection('trips').doc(tripId).update({
       'itinerary': days.map((e) => e.toJson()).toList(),
     });
   }
 
-  // ====================================================
-  // USER TRIP QUERIES
-  // ====================================================
-
+  // LOAD USER TRIPS
   Future<(List<Trip> created, List<Trip> saved)> loadUserTrips() async {
     final user = auth.currentUser;
     if (user == null) return (<Trip>[], <Trip>[]);
@@ -101,10 +92,7 @@ class TripRepository {
     );
   }
 
-  // ====================================================
-  // MODIFY USER-TRIP RELATION
-  // ====================================================
-
+  // DELETE TRIP
   Future<void> deleteTrip(String tripId) async {
     final user = auth.currentUser;
     if (user == null) throw Exception("User not logged in");
@@ -115,6 +103,7 @@ class TripRepository {
     });
   }
 
+  // UNSAVE TRIP
   Future<void> unsaveTrip(String tripId) async {
     final user = auth.currentUser;
     if (user == null) throw Exception("User not logged in");
@@ -124,6 +113,7 @@ class TripRepository {
     });
   }
 
+  // COPY TRIP
   Future<Trip> copyTrip(Trip original, String newName) async {
     final user = auth.currentUser;
     if (user == null) throw Exception("User not logged in");
@@ -140,10 +130,7 @@ class TripRepository {
     return newTrip;
   }
 
-  // ====================================================
-  // EXTRA UPDATE METHODS (used by TripDetailController)
-  // ====================================================
-
+  // GET CREATED TRIP IDS
   Future<List<String>> getCreatedTripIds() async {
     final user = auth.currentUser;
     if (user == null) return [];
@@ -151,18 +138,21 @@ class TripRepository {
     return List<String>.from(doc['createdTripIds'] ?? []);
   }
 
+  // UPDATE ITINERARY
   Future<void> updateItinerary(String tripId, List<ItineraryDay> days) async {
     await firestore.collection('trips').doc(tripId).update({
       'itinerary': days.map((e) => e.toJson()).toList(),
     });
   }
 
+  // UPDATE COVER IMAGE
   Future<void> updateCover(String tripId, String url) async {
     await firestore.collection('trips').doc(tripId).update({
       'coverImageUrl': url,
     });
   }
 
+  // UPDATE DATE RANGE
   Future<void> updateDates(
     String tripId,
     DateTime start,

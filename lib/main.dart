@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:itinerme/core/repositories/user_repository.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'features/auth/controllers/user_controller.dart';
 import 'features/auth/screens/auth_wrapper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'core/repositories/user_repository.dart';
 import 'core/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 

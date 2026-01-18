@@ -11,6 +11,7 @@ class TripSearchBar extends StatelessWidget {
     required this.onChanged,
   });
 
+  // TRIP SEARCH BAR
   @override
   Widget build(BuildContext context) {
     return Container(

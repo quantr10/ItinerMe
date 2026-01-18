@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:itinerme/core/repositories/trip_repository.dart';
 
 import '../state/my_collection_state.dart';
 import '../../../core/enums/tab_enum.dart';
+import '../../../core/repositories/trip_repository.dart';
 import '../../../core/models/trip.dart';
 
 class MyCollectionController extends ChangeNotifier {
@@ -14,6 +14,8 @@ class MyCollectionController extends ChangeNotifier {
   MyCollectionController({required this.tripRepository}) {
     loadTrips();
   }
+
+  // ================= LOAD USER TRIPS =================
 
   Future<void> loadTrips() async {
     _state = _state.copyWith(isLoading: true);
@@ -31,6 +33,8 @@ class MyCollectionController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ================= TAB TOGGLE =================
+
   void toggleTab(CollectionTab tab) {
     final showingMyTrips = tab == CollectionTab.myTrips;
 
@@ -41,6 +45,8 @@ class MyCollectionController extends ChangeNotifier {
     );
     notifyListeners();
   }
+
+  // ================= SEARCH =================
 
   void search(String query) {
     final base =
@@ -66,6 +72,8 @@ class MyCollectionController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ================= DELETE TRIP =================
+
   Future<void> deleteTrip(String tripId) async {
     _state = _state.copyWith(isLoading: true);
     notifyListeners();
@@ -83,15 +91,18 @@ class MyCollectionController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ================= UNSAVE TRIP =================
+
   Future<void> unsaveTrip(String tripId) async {
     await tripRepository.unsaveTrip(tripId);
 
     final updated = _state.savedTrips.where((t) => t.id != tripId).toList();
 
     _state = _state.copyWith(savedTrips: updated, displayedTrips: updated);
-
     notifyListeners();
   }
+
+  // ================= COPY TRIP =================
 
   Future<void> copyTrip(Trip original, String customName) async {
     _state = _state.copyWith(isLoading: true);

@@ -19,6 +19,7 @@ class DashboardTripList extends StatelessWidget {
     required this.formatter,
   });
 
+  // DASHBOARD TRIP LIST
   @override
   Widget build(BuildContext context) {
     if (state.displayedTrips.isEmpty) {

@@ -3,6 +3,7 @@ import '../../../core/theme/app_theme.dart';
 import '../controller/trip_detail_controller.dart';
 import 'google_cover_picker_dialog.dart';
 
+// COVER OPTION DIALOG
 Future<void> showCoverOptionDialog(
   BuildContext context,
   TripDetailController controller,
@@ -12,6 +13,8 @@ Future<void> showCoverOptionDialog(
     builder: (dialogContext) {
       return AlertDialog(
         backgroundColor: Colors.white,
+
+        // ===== TITLE =====
         title: const Text(
           'Choose Cover Image',
           style: TextStyle(
@@ -19,10 +22,14 @@ Future<void> showCoverOptionDialog(
             fontSize: AppTheme.largeFontSize,
           ),
         ),
+
         insetPadding: AppTheme.largePadding,
+
+        // ===== OPTIONS =====
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // --- GOOGLE PHOTO OPTION ---
             ListTile(
               leading: const Icon(Icons.image_search),
               title: const Text('Choose from Google'),
@@ -31,7 +38,10 @@ Future<void> showCoverOptionDialog(
                 await showGoogleCoverPickerDialog(context, controller);
               },
             ),
+
             const Divider(),
+
+            // --- DEVICE UPLOAD OPTION ---
             ListTile(
               leading: const Icon(Icons.photo_library),
               title: const Text('Upload from device'),

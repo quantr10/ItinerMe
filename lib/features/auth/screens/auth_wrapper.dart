@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-
 import 'login_screen.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../dashboard/screens/dashboard_screen.dart';
@@ -26,16 +25,19 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
         if (user != null && user != previousUser) {
           previousUser = user;
+          // Fetch user data after login
           Future.microtask(() => context.read<UserController>().fetchUser());
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Positioned.fill(child: AppTheme.loadingScreen());
+          return Scaffold(body: AppTheme.loadingScreen());
         }
 
         if (user != null) {
+          // Redirect to Dashboard if user is logged in
           return const DashboardScreen();
         } else {
+          // Otherwise, show Login screen
           return const LoginScreen();
         }
       },

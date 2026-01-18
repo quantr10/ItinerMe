@@ -6,6 +6,7 @@ class UserRepository {
     'users',
   );
 
+  // CREATE OR UPDATE USER
   Future<void> createOrUpdateUser(UserModel user) async {
     final doc = _usersRef.doc(user.id);
     final existing = await doc.get();
@@ -21,6 +22,7 @@ class UserRepository {
     }
   }
 
+  // GET USER BY ID
   Future<UserModel?> getUserById(String id) async {
     final doc = await _usersRef.doc(id).get();
     if (doc.exists) {
@@ -29,6 +31,7 @@ class UserRepository {
     return null;
   }
 
+  // UPDATE USER AVATAR
   Future<void> updateAvatar(String userId, String newUrl) async {
     await _usersRef.doc(userId).update({
       'avatarUrl': newUrl,

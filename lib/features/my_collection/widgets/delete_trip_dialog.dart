@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:itinerme/core/theme/app_theme.dart';
+import '../../../core/theme/app_theme.dart';
 
+// DELETE TRIP CONFIRMATION DIALOG
 Future<bool?> showDeleteTripDialog(BuildContext context) {
   return showDialog<bool>(
     context: context,

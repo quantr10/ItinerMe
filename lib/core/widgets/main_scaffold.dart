@@ -29,7 +29,7 @@ class MainScaffold extends StatelessWidget {
                 child: AppBar(
                   backgroundColor: AppTheme.accentColor,
                   automaticallyImplyLeading: false,
-                  elevation: 8,
+                  elevation: 2,
                   title: const Text(
                     'ItinerMe',
                     style: TextStyle(
@@ -75,7 +75,7 @@ class MainScaffold extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                       unselectedLabelStyle: theme.textTheme.labelSmall,
-                      elevation: 8,
+                      elevation: 2,
                       iconSize: 24,
                       items: [
                         BottomNavigationBarItem(

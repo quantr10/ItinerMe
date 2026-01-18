@@ -23,12 +23,13 @@ class InterestsField extends StatelessWidget {
     required this.onRemove,
   });
 
+  // INTERESTS INPUT FIELD
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ===== input row =====
+        // ===== INPUT ROW =====
         Row(
           children: [
             Expanded(
@@ -82,7 +83,7 @@ class InterestsField extends StatelessWidget {
           ],
         ),
 
-        // ===== prediction dropdown =====
+        // ===== PREDICTION DROPDOWN =====
         if (interestPredictions.isNotEmpty)
           AnimatedContainer(
             duration: AppTheme.animationDuration,
@@ -104,7 +105,7 @@ class InterestsField extends StatelessWidget {
                     color: AppTheme.primaryColor,
                   ),
                   title: Text(
-                    tag.label, // ✅ enum → label
+                    tag.label,
                     style: const TextStyle(
                       fontSize: AppTheme.defaultFontSize,
                       color: Colors.black,
@@ -116,7 +117,7 @@ class InterestsField extends StatelessWidget {
             ),
           ),
 
-        // ===== selected chips =====
+        // ===== SELECTED CHIPS =====
         if (interests.isNotEmpty) ...[
           AppTheme.smallSpacing,
           Wrap(
@@ -139,7 +140,7 @@ class InterestsField extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            tag.label, // ✅ enum → label
+                            tag.label,
                             style: const TextStyle(
                               fontSize: AppTheme.defaultFontSize,
                               color: Colors.white,

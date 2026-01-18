@@ -11,8 +11,8 @@ class AppRoutes {
   static const String createTrip = '/create-trip';
   static const String account = '/account';
   static const String login = '/login';
-  static const String myCollection = '/my-collection';
   static const String signup = '/signup';
+  static const String myCollection = '/my-collection';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {

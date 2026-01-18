@@ -17,8 +17,7 @@ class AuthService {
     GoogleSignIn? googleSignIn,
   }) : googleSignIn = googleSignIn ?? GoogleSignIn();
 
-  // ================= EMAIL LOGIN =================
-
+  // LOGIN WITH EMAIL
   Future<void> loginWithEmail({
     required String email,
     required String password,
@@ -34,8 +33,7 @@ class AuthService {
     await _ensureUserDocument(user);
   }
 
-  // ================= GOOGLE LOGIN =================
-
+  // LOGIN WITH GOOGLE
   Future<void> loginWithGoogle() async {
     final googleUser = await googleSignIn.signIn();
     if (googleUser == null) throw Exception("Cancelled");
@@ -54,8 +52,7 @@ class AuthService {
     await _ensureUserDocument(user);
   }
 
-  // ================= SIGN UP =================
-
+  // SIGN UP WITH EMAIL
   Future<void> signUpEmail({
     required String email,
     required String password,
@@ -81,9 +78,12 @@ class AuthService {
     await userRepository.createOrUpdateUser(userModel);
   }
 
-  // ================= INTERNAL =================
-
+  // ENSURE USER DOCUMENT
   Future<void> _ensureUserDocument(User firebaseUser) async {
+    final existing = await userRepository.getUserById(firebaseUser.uid);
+
+    if (existing != null) return;
+
     final displayName =
         firebaseUser.displayName ??
         firebaseUser.email?.split('@').first ??

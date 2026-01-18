@@ -9,8 +9,7 @@ class DashboardService {
 
   DashboardService({required this.firestore, required this.auth});
 
-  // ================= LOAD TRIPS =================
-
+  // LOAD DASHBOARD TRIPS
   Future<({List<Trip> trips, Set<String> savedTripIds})> loadTrips() async {
     final user = auth.currentUser;
     if (user == null) {
@@ -26,15 +25,14 @@ class DashboardService {
     final trips =
         snap.docs
             .map((d) => Trip.fromJson({...d.data(), 'id': d.id}))
-            // dashboard chỉ hiện trips không phải do user tạo
+            // Dashboard only shows trips NOT created by user
             .where((t) => !createdIds.contains(t.id))
             .toList();
 
     return (trips: trips, savedTripIds: savedIds);
   }
 
-  // ================= TOGGLE SAVE =================
-
+  // TOGGLE SAVE TRIP
   Future<Set<String>> toggleSaveTrip({required String tripId}) async {
     final user = auth.currentUser;
     if (user == null) throw Exception("User not logged in");

@@ -5,6 +5,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/models/trip.dart';
 import '../controller/trip_detail_controller.dart';
 
+// DATE RANGE DIALOG
 Future<bool?> showDateRangeDialog(
   BuildContext context,
   Trip trip,
@@ -17,6 +18,8 @@ Future<bool?> showDateRangeDialog(
     builder: (dialogContext) {
       return AlertDialog(
         backgroundColor: Colors.white,
+
+        // ===== TITLE =====
         title: const Text(
           'Select Date',
           style: TextStyle(
@@ -24,7 +27,10 @@ Future<bool?> showDateRangeDialog(
             fontSize: AppTheme.largeFontSize,
           ),
         ),
+
         insetPadding: AppTheme.largePadding,
+
+        // ===== CALENDAR =====
         content: SizedBox(
           height: 250,
           width: 350,
@@ -52,8 +58,11 @@ Future<bool?> showDateRangeDialog(
             },
           ),
         ),
+
+        // ===== ACTIONS =====
         actions: [
           AppTheme.dialogCancelButton(dialogContext),
+
           AppTheme.dialogPrimaryButton(
             context: dialogContext,
             label: 'Save',

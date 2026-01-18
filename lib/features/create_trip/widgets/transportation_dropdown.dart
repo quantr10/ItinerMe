@@ -13,6 +13,7 @@ class TransportationDropdown extends StatelessWidget {
     required this.onChanged,
   });
 
+  // TRANSPORTATION SELECT DROPDOWN
   @override
   Widget build(BuildContext context) {
     final items = TransportationType.values;
@@ -23,7 +24,6 @@ class TransportationDropdown extends StatelessWidget {
         value: value,
         isExpanded: true,
         style: const TextStyle(fontSize: AppTheme.defaultFontSize),
-
         decoration: AppTheme.inputDecoration('Transportation').copyWith(
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 12,
@@ -38,7 +38,6 @@ class TransportationDropdown extends StatelessWidget {
                 child: Row(
                   children: [
                     SizedBox(
-                      //haha
                       width: 40,
                       child: Icon(
                         t.icon,
@@ -60,7 +59,6 @@ class TransportationDropdown extends StatelessWidget {
               );
             }).toList(),
         onChanged: (v) => v != null ? onChanged(v) : null,
-
         dropdownColor: Colors.white,
         icon: const Icon(
           Icons.arrow_drop_down,

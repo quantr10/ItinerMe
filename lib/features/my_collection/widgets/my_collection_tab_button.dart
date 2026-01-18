@@ -13,6 +13,7 @@ class TripTabButton extends StatelessWidget {
     required this.onTap,
   });
 
+  // TRIP TAB BUTTON
   @override
   Widget build(BuildContext context) {
     return InkWell(

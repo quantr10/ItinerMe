@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:itinerme/core/repositories/trip_repository.dart';
-import 'package:itinerme/core/services/google_place_service.dart';
-import 'package:itinerme/core/services/trip_ai_service.dart';
+import '../../../core/repositories/trip_repository.dart';
+import '../../../core/services/google_place_service.dart';
+import '../../../core/services/trip_ai_service.dart';
 import 'package:provider/provider.dart';
 import 'package:google_place/google_place.dart';
 

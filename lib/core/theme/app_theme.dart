@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // ===== COLORS =====
+  // COLORS
   static const primaryColor = Color(0xFF88A28E);
   static const secondaryColor = Color(0xFFB8C4BB);
   static const accentColor = Color(0xFF6D8B74);
   static const errorColor = Colors.red;
   static const hintColor = Color(0xFF616161);
 
-  // ===== RADIUS & BORDERS =====
+  // RADIUS & BORDERS
   static const borderRadius = 12.0;
   static const largeBorderRadius = 24.0;
   static const borderWidth = 1.0;
 
-  // ===== SPACING =====
+  // SPACING
   static const smallSpacing = SizedBox(height: 8);
   static const mediumSpacing = SizedBox(height: 16);
   static const largeSpacing = SizedBox(height: 24);
   static const extraLargeSpacing = SizedBox(height: 48);
 
-  // ===== SIZING =====
+  // SIZING & PADDING
   static const fieldHeight = 40.0;
 
   static const largePadding = EdgeInsets.all(24);
@@ -29,32 +29,32 @@ class AppTheme {
   static const horizontalPadding = EdgeInsets.symmetric(horizontal: 16);
   static const largeHorizontalPadding = EdgeInsets.symmetric(horizontal: 24);
 
-  // ===== FONT =====
+  // FONT SIZES
   static const titleFontSize = 24.0;
   static const largeFontSize = 18.0;
   static const defaultFontSize = 14.0;
   static const smallFontSize = 12.0;
 
-  // ===== ICON =====
+  // ICON SIZES
   static const largeIconFont = 20.0;
   static const mediumIconFont = 18.0;
   static const smallIconFont = 16.0;
 
-  // ===== ANIMATION =====
+  // ANIMATION DURATIONS
   static const animationDuration = Duration(milliseconds: 300);
   static const messageDuration = Duration(seconds: 2);
 
-  // ===== SHADOW =====
+  // SHADOW
   static const BoxShadow defaultShadow = BoxShadow(
     color: Color(0x0D000000),
     blurRadius: 10,
     offset: Offset(0, 2),
   );
 
-  // ===== GLOBAL SNACKBAR KEY =====
+  // GLOBAL SNACKBAR KEY
   static final messengerKey = GlobalKey<ScaffoldMessengerState>();
 
-  // ===== INPUT DECORATION =====
+  // INPUT DECORATION
   static InputDecoration inputDecoration(
     String hint, {
     VoidCallback? onClear,
@@ -90,7 +90,7 @@ class AppTheme {
     );
   }
 
-  // ===== STANDARD BUTTON =====
+  // STANDARD ELEVATED BUTTON
   static Widget elevatedButton({
     required String label,
     required VoidCallback? onPressed,
@@ -119,7 +119,7 @@ class AppTheme {
     );
   }
 
-  // ===== SNACKBAR METHODS =====
+  // SNACKBAR HELPERS
   static void success(String message) {
     _showSnack(message, accentColor);
   }
@@ -140,8 +140,7 @@ class AppTheme {
       );
   }
 
-  // ===== LOADING WIDGET =====
-
+  // LOADING SCREEN
   static Widget loadingScreen({bool overlay = false}) {
     return Container(
       color:
@@ -154,14 +153,13 @@ class AppTheme {
     );
   }
 
-  // ===== BUTTONS =====
-
+  // DIALOG BUTTONS
   static Widget dialogCancelButton(BuildContext context) {
     return TextButton(
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.black,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),
       onPressed: () => Navigator.pop(context),
@@ -180,7 +178,7 @@ class AppTheme {
         backgroundColor: isPrimary ? primaryColor : errorColor,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppTheme.borderRadius),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),
       onPressed: onPressed,

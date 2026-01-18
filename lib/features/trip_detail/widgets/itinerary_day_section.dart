@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:itinerme/features/trip_detail/widgets/confirm_clear_day_dialog.dart';
-import 'package:itinerme/features/trip_detail/widgets/confirm_remove_destination_dialog.dart';
 
 import '../../../core/models/itinerary_day.dart';
 import '../../../core/models/trip.dart';
 import '../../../core/theme/app_theme.dart';
 import '../controller/trip_detail_controller.dart';
+import 'confirm_remove_destination_dialog.dart';
+import 'confirm_clear_day_dialog.dart';
 import 'destination_card.dart';
 import 'travel_info_between.dart';
 
+// ITINERARY DAY SECTIONSECTION
 class ItineraryDaySection extends StatelessWidget {
   final Trip trip;
   final ItineraryDay day;
@@ -36,7 +37,7 @@ class ItineraryDaySection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ===== DAY HEADER =====
+          // DAY HEADER
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -52,28 +53,16 @@ class ItineraryDaySection extends StatelessWidget {
               if (controller.state.canEdit)
                 Row(
                   children: [
-                    // ADD DESTINATION
+                    // ===== ADD DESTINATION =====
                     InkWell(
                       onTap: onAddDestination,
                       borderRadius: BorderRadius.circular(
                         AppTheme.largeBorderRadius,
                       ),
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          boxShadow: [AppTheme.defaultShadow],
-                        ),
-                        child: Icon(
-                          Icons.add,
-                          color: AppTheme.primaryColor,
-                          size: AppTheme.largeIconFont,
-                        ),
-                      ),
+                      child: _iconAction(Icons.add, AppTheme.primaryColor),
                     ),
 
-                    // DELETE DAY
+                    // ===== CLEAR DAY =====
                     InkWell(
                       onTap: () async {
                         final confirm = await showConfirmClearDayDialog(
@@ -91,18 +80,9 @@ class ItineraryDaySection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(
                         AppTheme.largeBorderRadius,
                       ),
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          boxShadow: [AppTheme.defaultShadow],
-                        ),
-                        child: Icon(
-                          Icons.delete_outline,
-                          color: AppTheme.errorColor,
-                          size: AppTheme.largeIconFont,
-                        ),
+                      child: _iconAction(
+                        Icons.delete_outline,
+                        AppTheme.errorColor,
                       ),
                     ),
                   ],
@@ -112,7 +92,7 @@ class ItineraryDaySection extends StatelessWidget {
 
           AppTheme.mediumSpacing,
 
-          // ===== EMPTY DAY =====
+          // EMPTY DAY STATE
           if (day.destinations.isEmpty)
             controller.state.canEdit
                 ? Center(
@@ -149,7 +129,7 @@ class ItineraryDaySection extends StatelessWidget {
                   ),
                 )
                 : const SizedBox.shrink()
-          // ===== DESTINATIONS =====
+          // DESTINATION LIST
           else
             Column(
               children: [
@@ -159,6 +139,7 @@ class ItineraryDaySection extends StatelessWidget {
 
                   return Column(
                     children: [
+                      // ===== DESTINATION CARD =====
                       DestinationCard(
                         destination: destination,
                         dayIndex: dayIndex,
@@ -189,7 +170,7 @@ class ItineraryDaySection extends StatelessWidget {
                         },
                       ),
 
-                      // ===== TRAVEL INFO BETWEEN =====
+                      // ===== TRAVEL INFO BETWEEN DESTINATIONS =====
                       if (destIndex < day.destinations.length - 1)
                         TravelInfoBetween(
                           from: day.destinations[destIndex],
@@ -204,6 +185,20 @@ class ItineraryDaySection extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+
+  // SMALL ICON ACTION BUILDER
+  Widget _iconAction(IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(6),
+      margin: const EdgeInsets.only(left: 6),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white,
+        boxShadow: [AppTheme.defaultShadow],
+      ),
+      child: Icon(icon, color: color, size: AppTheme.largeIconFont),
     );
   }
 }

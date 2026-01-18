@@ -6,6 +6,7 @@ class EmptyDashboardState extends StatelessWidget {
 
   const EmptyDashboardState({super.key, required this.isSearching});
 
+  // EMPTY DASHBOARD STATE
   @override
   Widget build(BuildContext context) {
     return Center(

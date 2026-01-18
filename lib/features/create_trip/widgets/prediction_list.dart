@@ -16,6 +16,7 @@ class PredictionList<T> extends StatelessWidget {
     required this.itemText,
   });
 
+  // GENERIC PREDICTION LIST DROPDOWN
   @override
   Widget build(BuildContext context) {
     if (predictions.isEmpty) return const SizedBox();
@@ -37,7 +38,7 @@ class PredictionList<T> extends StatelessWidget {
               leading: Icon(icon, color: AppTheme.primaryColor),
               title: Text(
                 itemText(predictions[index]),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: AppTheme.defaultFontSize,
                   color: Colors.black,
                 ),

@@ -11,6 +11,7 @@ class EmptyTripState extends StatelessWidget {
     required this.isSearching,
   });
 
+  // EMPTY MY COLLECTION STATE
   @override
   Widget build(BuildContext context) {
     return Center(

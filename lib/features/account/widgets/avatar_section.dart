@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../core/theme/app_theme.dart';
 
 class AvatarSection extends StatelessWidget {
@@ -14,12 +13,14 @@ class AvatarSection extends StatelessWidget {
     required this.onPickImage,
   });
 
+  // AVATAR SECTION UI
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // ================= AVATAR CIRCLE =================
           CircleAvatar(
             radius: 60,
             backgroundImage: avatar,
@@ -29,6 +30,8 @@ class AvatarSection extends StatelessWidget {
                     ? const Icon(Icons.person, size: 60, color: Colors.white)
                     : null,
           ),
+
+          // ================= CAMERA BUTTON =================
           Positioned(
             bottom: 0,
             right: 0,

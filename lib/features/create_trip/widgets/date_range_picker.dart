@@ -16,6 +16,7 @@ class DateRangePicker extends StatelessWidget {
     required this.onSelect,
   });
 
+  // DATE RANGE PICKER
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -81,7 +82,6 @@ class DateRangePicker extends StatelessWidget {
                     }
                     Navigator.of(context).pop();
                   },
-                  isPrimary: true,
                 ),
               ],
             );

@@ -1,12 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:itinerme/core/services/auth_service.dart';
-import 'package:itinerme/core/repositories/user_repository.dart';
+import '../../../core/services/auth_service.dart';
+import '../../../core/repositories/user_repository.dart';
 import 'package:provider/provider.dart';
-
 import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_theme.dart';
-
 import '../controllers/user_controller.dart';
 import '../controllers/auth_controller.dart';
 import '../widgets/auth_header.dart';
@@ -42,10 +40,25 @@ class _SignUpView extends StatefulWidget {
 
 class _SignUpViewState extends State<_SignUpView> {
   final _formKey = GlobalKey<FormState>();
+  late TextEditingController _usernameController;
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
 
-  final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _usernameController = TextEditingController();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,115 +66,86 @@ class _SignUpViewState extends State<_SignUpView> {
     final state = controller.state;
     final userController = context.read<UserController>();
 
-    if (state.isLoading) {
-      return Positioned.fill(child: AppTheme.loadingScreen(overlay: true));
-    }
-
-    return Scaffold(
-      backgroundColor: AppTheme.primaryColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: AppTheme.largeHorizontalPadding,
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                const AuthHeader(),
-
-                // ===== Username =====
-                AuthUsernameField(controller: _usernameController),
-
-                AppTheme.smallSpacing,
-
-                // ===== Email =====
-                AuthEmailField(controller: _emailController),
-
-                AppTheme.smallSpacing,
-
-                // ===== Password =====
-                AuthPasswordField(
-                  controller: _passwordController,
-                  obscure: state.obscurePassword,
-                  onToggle: controller.togglePasswordVisibility,
-                ),
-
-                AppTheme.mediumSpacing,
-
-                // ===== Sign Up Button =====
-                AppTheme.elevatedButton(
-                  label: 'SIGN UP',
-                  isPrimary: true,
-                  onPressed: () async {
-                    if (!_formKey.currentState!.validate()) return;
-
-                    try {
-                      await controller.signUpEmail(
-                        email: _emailController.text,
-                        password: _passwordController.text,
-                        username: _usernameController.text,
-                        userController: userController,
-                      );
-
-                      if (!context.mounted) return;
-                      Navigator.pushReplacementNamed(
-                        context,
-                        AppRoutes.dashboard,
-                      );
-                    } catch (_) {
-                      AppTheme.error('Sign up failed');
-                    }
-                  },
-                ),
-
-                // ===== Google Sign Up =====
-                AuthGoogleButton(
-                  onPressed: () async {
-                    try {
-                      await controller.loginWithGoogle(
-                        userController: userController,
-                      );
-
-                      if (!context.mounted) return;
-                      Navigator.pushReplacementNamed(
-                        context,
-                        AppRoutes.dashboard,
-                      );
-                    } catch (_) {
-                      AppTheme.error('Google sign up failed');
-                    }
-                  },
-                ),
-
-                AppTheme.largeSpacing,
-
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, AppRoutes.login);
-                  },
-                  child: RichText(
-                    text: const TextSpan(
-                      text: 'Already have an account? ',
-                      style: TextStyle(
-                        fontSize: AppTheme.defaultFontSize,
-                        color: Colors.white,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: 'Login',
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: AppTheme.primaryColor,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: AppTheme.largeHorizontalPadding,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    const AuthHeader(),
+                    AuthUsernameField(controller: _usernameController),
+                    AppTheme.smallSpacing,
+                    AuthEmailField(controller: _emailController),
+                    AppTheme.smallSpacing,
+                    AuthPasswordField(
+                      controller: _passwordController,
+                      obscure: state.obscurePassword,
+                      onToggle: controller.togglePasswordVisibility,
+                    ),
+                    AppTheme.mediumSpacing,
+                    AppTheme.elevatedButton(
+                      label: 'SIGN UP',
+                      isPrimary: true,
+                      onPressed: () async {
+                        if (!_formKey.currentState!.validate()) return;
+                        await controller.signUpEmail(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                          username: _usernameController.text,
+                          userController: userController,
+                          context: context,
+                        );
+                      },
+                    ),
+                    AuthGoogleButton(
+                      onPressed: () async {
+                        await controller.loginWithGoogle(
+                          userController: userController,
+                          context: context,
+                        );
+                      },
+                    ),
+                    AppTheme.largeSpacing,
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.login,
+                        );
+                      },
+                      child: RichText(
+                        text: const TextSpan(
+                          text: 'Already have an account? ',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                            fontSize: AppTheme.defaultFontSize,
                             color: Colors.white,
                           ),
+                          children: [
+                            TextSpan(
+                              text: 'Login',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
+        if (state.isLoading)
+          Positioned.fill(child: AppTheme.loadingScreen(overlay: true)),
+      ],
     );
   }
 }

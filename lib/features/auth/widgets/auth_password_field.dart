@@ -13,6 +13,7 @@ class AuthPasswordField extends StatelessWidget {
     required this.onToggle,
   });
 
+  // PASSWORD INPUT FIELD
   @override
   Widget build(BuildContext context) {
     return SizedBox(

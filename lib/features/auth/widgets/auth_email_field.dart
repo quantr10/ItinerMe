@@ -6,6 +6,7 @@ class AuthEmailField extends StatelessWidget {
 
   const AuthEmailField({super.key, required this.controller});
 
+  // EMAIL INPUT FIELD
   @override
   Widget build(BuildContext context) {
     return SizedBox(

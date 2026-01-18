@@ -11,6 +11,7 @@ class DashboardSearchBar extends StatelessWidget {
     required this.onChanged,
   });
 
+  // DASHBOARD SEARCH BAR
   @override
   Widget build(BuildContext context) {
     return Container(

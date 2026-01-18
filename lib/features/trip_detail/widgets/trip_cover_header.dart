@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/models/trip.dart';
 import '../../../core/theme/app_theme.dart';
 
+// TRIP COVER HEADER
 class TripCoverHeader extends StatelessWidget {
   final Trip trip;
   final bool canEdit;
@@ -20,6 +21,7 @@ class TripCoverHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
+        // COVER IMAGE
         ClipRRect(
           borderRadius: BorderRadius.circular(AppTheme.borderRadius),
           child: Image.network(
@@ -59,7 +61,7 @@ class TripCoverHeader extends StatelessWidget {
           ),
         ),
 
-        // CAMERA BUTTON
+        // CHANGE COVER BUTTON
         if (canEdit)
           Positioned(
             bottom: 8,

@@ -4,6 +4,7 @@ import 'package:google_place/google_place.dart';
 import '../../../core/theme/app_theme.dart';
 import '../controller/trip_detail_controller.dart';
 
+// ADD DESTINATION DIALOG
 Future<void> showAddDestinationDialog(
   BuildContext context,
   TripDetailController controller,
@@ -29,11 +30,14 @@ Future<void> showAddDestinationDialog(
               ),
             ),
             insetPadding: AppTheme.largePadding,
+
+            // ===== CONTENT =====
             content: SizedBox(
               height: 250,
               width: 350,
               child: Column(
                 children: [
+                  // ===== SEARCH FIELD =====
                   SizedBox(
                     height: AppTheme.fieldHeight,
                     child: TextField(
@@ -45,6 +49,7 @@ Future<void> showAddDestinationDialog(
                           setModalState(() => results = []);
                           return;
                         }
+
                         final list = await controller.searchDestinationInTrip(
                           query,
                         );
@@ -57,7 +62,10 @@ Future<void> showAddDestinationDialog(
                       ),
                     ),
                   ),
+
                   AppTheme.smallSpacing,
+
+                  // ===== AUTOCOMPLETE RESULTS =====
                   if (results.isNotEmpty)
                     Expanded(
                       child: ListView.builder(
@@ -85,8 +93,11 @@ Future<void> showAddDestinationDialog(
                 ],
               ),
             ),
+
+            // ===== ACTIONS =====
             actions: [
               AppTheme.dialogCancelButton(dialogContext),
+
               AppTheme.dialogPrimaryButton(
                 context: dialogContext,
                 label: 'Add',
@@ -109,6 +120,7 @@ Future<void> showAddDestinationDialog(
     },
   );
 
+  // ===== RESULT TOAST =====
   if (ok == true) {
     AppTheme.success('Destination added');
   } else if (ok == false) {

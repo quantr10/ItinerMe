@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../../core/models/trip.dart';
 import '../../../core/theme/app_theme.dart';
 
+// TRIP INFO HEADER
 class TripInfoHeader extends StatelessWidget {
   final Trip trip;
   final bool canEdit;
@@ -22,7 +23,7 @@ class TripInfoHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Trip Name
+        // TRIP NAME
         Text(
           trip.name,
           style: const TextStyle(
@@ -34,7 +35,7 @@ class TripInfoHeader extends StatelessWidget {
 
         AppTheme.smallSpacing,
 
-        // Location
+        // LOCATION
         Text(
           trip.location,
           style: const TextStyle(
@@ -44,7 +45,7 @@ class TripInfoHeader extends StatelessWidget {
           ),
         ),
 
-        // Date Range
+        // DATE RANGE
         Text(
           '${DateFormat('EEE, MMM d').format(trip.startDate)} - '
           '${DateFormat('EEE, MMM d').format(trip.endDate)}',
@@ -57,9 +58,10 @@ class TripInfoHeader extends StatelessWidget {
 
         AppTheme.mediumSpacing,
 
+        // CALENDAR BUTTON + DAY SELECTOR
         Row(
           children: [
-            // Calendar Button
+            // ===== CALENDAR EDIT BUTTON =====
             if (canEdit)
               Row(
                 children: [
@@ -86,7 +88,7 @@ class TripInfoHeader extends StatelessWidget {
                 ],
               ),
 
-            // Day Selector
+            // ===== DAY SELECTOR =====
             Expanded(
               child: SizedBox(
                 height: 30,
@@ -96,6 +98,7 @@ class TripInfoHeader extends StatelessWidget {
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemBuilder: (context, index) {
                     final date = trip.itinerary[index].date;
+
                     return InkWell(
                       onTap: () => onSelectDay(index),
                       borderRadius: BorderRadius.circular(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 
+// COPY TRIP DIALOGDIALOG
 Future<String?> showCopyTripDialog(BuildContext context, String baseName) {
   final textController = TextEditingController(text: '$baseName Copy');
   bool valid = textController.text.trim().isNotEmpty;

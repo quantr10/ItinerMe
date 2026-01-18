@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class PlaceImageCacheService {
+  // CACHE PLACE PHOTO
   static Future<String?> cachePlacePhoto({
     required String photoReference,
     required String path,

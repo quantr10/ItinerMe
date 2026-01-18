@@ -26,6 +26,7 @@ class TripCard extends StatelessWidget {
     this.onCopy,
   });
 
+  // TRIP CARD (MY COLLECTION)
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -50,123 +51,121 @@ class TripCard extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(8),
-              child: Column(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          trip.coverImageUrl,
-                          width: 120,
-                          height: 120,
-                          fit: BoxFit.cover,
-                          errorBuilder:
-                              (_, __, ___) => Container(
-                                width: 120,
-                                height: 120,
-                                color: AppTheme.secondaryColor.withOpacity(0.2),
-                                child: const Icon(
-                                  Icons.photo,
-                                  size: 36,
-                                  color: AppTheme.hintColor,
-                                ),
-                              ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
+                  // ===== Cover Image =====
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.network(
+                      trip.coverImageUrl,
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
+                      errorBuilder:
+                          (_, __, ___) => Container(
+                            width: 120,
+                            height: 120,
+                            color: AppTheme.secondaryColor.withOpacity(0.2),
+                            child: const Icon(
+                              Icons.photo,
+                              size: 36,
+                              color: AppTheme.hintColor,
+                            ),
+                          ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
 
-                      Expanded(
-                        child: Stack(
+                  // ===== Trip Info =====
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            Text(
+                              trip.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontSize: AppTheme.largeFontSize,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
                               children: [
+                                const Icon(
+                                  Icons.location_on,
+                                  size: AppTheme.mediumIconFont,
+                                  color: AppTheme.primaryColor,
+                                ),
+                                const SizedBox(width: 6),
                                 Text(
-                                  trip.name,
+                                  trip.location,
                                   style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    fontSize: AppTheme.largeFontSize,
+                                    fontSize: AppTheme.defaultFontSize,
+                                    color: AppTheme.hintColor,
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 6),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.location_on,
-                                      size: AppTheme.mediumIconFont,
-                                      color: AppTheme.primaryColor,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      trip.location,
-                                      style: const TextStyle(
-                                        fontSize: AppTheme.defaultFontSize,
-                                        color: AppTheme.hintColor,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.calendar_today,
-                                      size: AppTheme.mediumIconFont,
-                                      color: AppTheme.primaryColor,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      '${formatter.format(trip.startDate)} - ${formatter.format(trip.endDate)}',
-                                      style: const TextStyle(
-                                        fontSize: AppTheme.defaultFontSize,
-                                        color: AppTheme.hintColor,
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ],
                             ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (mode == TripCardMode.saved) ...[
-                                    _buildAction(
-                                      Icons.copy,
-                                      onCopy,
-                                      tooltip: 'Duplicate trip',
-                                    ),
-                                    const SizedBox(width: 4),
-                                    _buildAction(
-                                      Icons.favorite,
-                                      onRemove,
-                                      color: AppTheme.errorColor,
-                                      tooltip: 'Remove from saved',
-                                    ),
-                                  ],
-                                  if (mode == TripCardMode.myTrips)
-                                    _buildAction(
-                                      Icons.delete_outline,
-                                      onDelete,
-                                      color: AppTheme.errorColor,
-                                      tooltip: 'Delete trip',
-                                    ),
-                                ],
-                              ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.calendar_today,
+                                  size: AppTheme.mediumIconFont,
+                                  color: AppTheme.primaryColor,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '${formatter.format(trip.startDate)} - ${formatter.format(trip.endDate)}',
+                                  style: const TextStyle(
+                                    fontSize: AppTheme.defaultFontSize,
+                                    color: AppTheme.hintColor,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ),
-                    ],
+
+                        // ===== Action Buttons =====
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (mode == TripCardMode.saved) ...[
+                                _buildAction(
+                                  Icons.copy,
+                                  onCopy,
+                                  tooltip: 'Duplicate trip',
+                                ),
+                                const SizedBox(width: 4),
+                                _buildAction(
+                                  Icons.favorite,
+                                  onRemove,
+                                  color: AppTheme.errorColor,
+                                  tooltip: 'Remove from saved',
+                                ),
+                              ],
+                              if (mode == TripCardMode.myTrips)
+                                _buildAction(
+                                  Icons.delete_outline,
+                                  onDelete,
+                                  color: AppTheme.errorColor,
+                                  tooltip: 'Delete trip',
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -177,6 +176,7 @@ class TripCard extends StatelessWidget {
     );
   }
 
+  // ACTION ICON BUILDER
   Widget _buildAction(
     IconData icon,
     VoidCallback? onTap, {

@@ -6,6 +6,7 @@ class AuthUsernameField extends StatelessWidget {
 
   const AuthUsernameField({super.key, required this.controller});
 
+  // USERNAME INPUT FIELDSS
   @override
   Widget build(BuildContext context) {
     return SizedBox(

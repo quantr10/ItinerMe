@@ -16,6 +16,7 @@ class DashboardSortBar extends StatelessWidget {
     required this.onToggleOrder,
   });
 
+  // DASHBOARD SORT BAR
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -29,7 +30,7 @@ class DashboardSortBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Sort icon
+          // SORT ICON
           Icon(
             Icons.sort,
             size: AppTheme.largeIconFont,
@@ -37,7 +38,7 @@ class DashboardSortBar extends StatelessWidget {
           ),
           const SizedBox(width: 24),
 
-          // Dropdown sort option
+          // SORT DROPDOWN OPTION
           Expanded(
             child: DropdownButtonHideUnderline(
               child: DropdownButtonFormField<SortOption>(
@@ -77,7 +78,7 @@ class DashboardSortBar extends StatelessWidget {
 
           const SizedBox(width: 24),
 
-          // Asc / Desc toggle
+          // ASC/DESC TOGGLE
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: onToggleOrder,

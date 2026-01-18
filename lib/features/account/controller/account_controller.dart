@@ -1,8 +1,7 @@
 // lib/features/account/controller/account_controller.dart
 
 import 'package:flutter/material.dart';
-import 'package:itinerme/features/account/state/account_state.dart';
-
+import '../state/account_state.dart';
 import '../../../core/services/account_service.dart';
 
 class AccountController extends ChangeNotifier {
@@ -13,6 +12,7 @@ class AccountController extends ChangeNotifier {
 
   AccountController({required this.accountService});
 
+  // PICK & UPLOAD AVATAR
   Future<void> pickAndUploadAvatar(String userId) async {
     _state = _state.copyWith(isUploading: true);
     notifyListeners();
@@ -20,7 +20,7 @@ class AccountController extends ChangeNotifier {
     try {
       final url = await accountService.pickAndUploadAvatar(userId);
 
-      // user cancel pick image -> url null
+      // User cancelled image picking → url null
       if (url == null) {
         _state = _state.copyWith(isUploading: false);
         notifyListeners();
@@ -36,5 +36,6 @@ class AccountController extends ChangeNotifier {
     }
   }
 
+  // LOGOUT
   Future<void> logout() => accountService.logout();
 }

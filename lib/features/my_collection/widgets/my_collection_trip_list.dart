@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:itinerme/features/my_collection/widgets/delete_trip_dialog.dart';
-import 'package:itinerme/features/my_collection/widgets/copy_trip_dialog.dart';
+import 'delete_trip_dialog.dart';
+import 'copy_trip_dialog.dart';
 
 import '../../../core/enums/tab_enum.dart';
 import '../../../core/models/trip.dart';
@@ -24,6 +24,7 @@ class MyCollectionTripList extends StatelessWidget {
     required this.formatter,
   });
 
+  // MY COLLECTION TRIP LIST
   @override
   Widget build(BuildContext context) {
     if (state.displayedTrips.isEmpty) {
@@ -46,7 +47,7 @@ class MyCollectionTripList extends StatelessWidget {
                   ? TripCardMode.myTrips
                   : TripCardMode.saved,
 
-          // ===== DELETE =====
+          // ===== DELETE (My Trips tab) =====
           onDelete:
               state.currentTab == CollectionTab.myTrips
                   ? () async {
@@ -62,7 +63,7 @@ class MyCollectionTripList extends StatelessWidget {
                   }
                   : null,
 
-          // ===== UNSAVE =====
+          // ===== UNSAVE (Saved tab) =====
           onRemove:
               state.currentTab == CollectionTab.saved
                   ? () async {
@@ -75,7 +76,7 @@ class MyCollectionTripList extends StatelessWidget {
                   }
                   : null,
 
-          // ===== COPY =====
+          // ===== COPY (Saved tab) =====
           onCopy:
               state.currentTab == CollectionTab.saved
                   ? () async {

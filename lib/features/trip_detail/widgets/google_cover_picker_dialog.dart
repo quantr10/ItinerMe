@@ -4,11 +4,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../../core/theme/app_theme.dart';
 import '../controller/trip_detail_controller.dart';
 
+// GOOGLE COVER PICKER DIALOG
 Future<void> showGoogleCoverPickerDialog(
   BuildContext context,
   TripDetailController controller,
 ) async {
   final photos = await controller.getTripPhotoReferences();
+
   if (photos.isEmpty) {
     AppTheme.error('No photos available');
     return;
@@ -22,6 +24,7 @@ Future<void> showGoogleCoverPickerDialog(
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
+            backgroundColor: Colors.white,
             title: const Text(
               'Choose Cover Image',
               style: TextStyle(
@@ -29,7 +32,8 @@ Future<void> showGoogleCoverPickerDialog(
                 fontSize: AppTheme.largeFontSize,
               ),
             ),
-            backgroundColor: Colors.white,
+
+            // PHOTO GRID CONTENT
             content: SizedBox(
               width: double.maxFinite,
               child: GridView.builder(
@@ -42,8 +46,11 @@ Future<void> showGoogleCoverPickerDialog(
                 ),
                 itemBuilder: (_, index) {
                   final ref = photos[index];
+
                   final url =
-                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=$ref&key=${dotenv.env['GOOGLE_MAPS_API_KEY']}';
+                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=800'
+                      '&photoreference=$ref'
+                      '&key=${dotenv.env['GOOGLE_MAPS_API_KEY']}';
 
                   final isSelected = selected == ref;
 
@@ -56,20 +63,22 @@ Future<void> showGoogleCoverPickerDialog(
                           fit: BoxFit.cover,
                           width: double.infinity,
                           height: double.infinity,
+
+                          // ===== LOADING STATE =====
                           loadingBuilder: (context, child, progress) {
                             if (progress == null) return child;
-                            return Center(
-                              child: Positioned.fill(
-                                child: AppTheme.loadingScreen(),
-                              ),
-                            );
+                            return Center(child: AppTheme.loadingScreen());
                           },
-                          errorBuilder: (context, error, stackTrace) {
+
+                          // ===== ERROR STATE =====
+                          errorBuilder: (_, __, ___) {
                             return const Center(
                               child: Icon(Icons.broken_image),
                             );
                           },
                         ),
+
+                        // ===== SELECTED CHECKMARK =====
                         if (isSelected)
                           Positioned(
                             top: 6,
@@ -91,6 +100,8 @@ Future<void> showGoogleCoverPickerDialog(
                 },
               ),
             ),
+
+            // ACTION BUTTONS
             actions: [
               AppTheme.dialogCancelButton(dialogContext),
               AppTheme.dialogPrimaryButton(
@@ -112,6 +123,7 @@ Future<void> showGoogleCoverPickerDialog(
     },
   );
 
+  // RESULT FEEDBACK
   if (ok == true) {
     AppTheme.success('Cover updated');
   } else if (ok == false) {

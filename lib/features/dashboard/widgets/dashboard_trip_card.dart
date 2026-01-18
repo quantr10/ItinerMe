@@ -18,6 +18,7 @@ class TripCard extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
+  // TRIP CARD
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -41,6 +42,7 @@ class TripCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // ===== COVER IMAGE + SAVE BUTTON =====
             Stack(
               children: [
                 ClipRRect(
@@ -95,6 +97,7 @@ class TripCard extends StatelessWidget {
               ],
             ),
 
+            // ===== TRIP INFO =====
             Padding(
               padding: AppTheme.defaultPadding,
               child: Column(
@@ -111,6 +114,7 @@ class TripCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
+
                   Row(
                     children: [
                       Icon(

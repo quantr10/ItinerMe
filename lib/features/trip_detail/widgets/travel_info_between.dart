@@ -6,6 +6,7 @@ import '../../../core/models/destination.dart';
 import '../../../core/theme/app_theme.dart';
 import '../controller/trip_detail_controller.dart';
 
+// TRAVEL INFO BETWEEN DESTINATIONS
 class TravelInfoBetween extends StatefulWidget {
   final Destination from;
   final Destination to;
@@ -41,6 +42,7 @@ class _TravelInfoBetweenState extends State<TravelInfoBetween> {
     selectedTransport = widget.initialTransport;
   }
 
+  // FETCH ALL TRANSPORT MODES DATA WHEN EXPANDED
   Future<void> _fetchAll() async {
     for (var t in options) {
       final info = await widget.controller.getTravelInfo(
@@ -59,6 +61,7 @@ class _TravelInfoBetweenState extends State<TravelInfoBetween> {
 
   @override
   Widget build(BuildContext context) {
+    // INITIAL FETCH FOR DEFAULT TRANSPORT MODE
     travelFuture ??= widget.controller.getTravelInfo(
       originLat: widget.from.latitude,
       originLng: widget.from.longitude,
@@ -74,13 +77,18 @@ class _TravelInfoBetweenState extends State<TravelInfoBetween> {
 
         final info = snapshot.data!;
         final mode = selectedTransport.googleMode;
+
         final mapsUrl =
-            'https://www.google.com/maps/dir/?api=1&origin=${widget.from.latitude},${widget.from.longitude}&destination=${widget.to.latitude},${widget.to.longitude}&travelmode=$mode';
+            'https://www.google.com/maps/dir/?api=1'
+            '&origin=${widget.from.latitude},${widget.from.longitude}'
+            '&destination=${widget.to.latitude},${widget.to.longitude}'
+            '&travelmode=$mode';
 
         return Padding(
           padding: AppTheme.defaultPadding,
           child: Column(
             children: [
+              // COMPACT ROW
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -115,6 +123,8 @@ class _TravelInfoBetweenState extends State<TravelInfoBetween> {
                     ),
                   ),
                   const SizedBox(width: 10),
+
+                  // ===== OPEN GOOGLE MAPS =====
                   GestureDetector(
                     onTap: () async {
                       final uri = Uri.parse(mapsUrl);
@@ -136,6 +146,7 @@ class _TravelInfoBetweenState extends State<TravelInfoBetween> {
                 ],
               ),
 
+              // EXPANDED TRANSPORT OPTIONS
               if (expanded) ...[
                 AppTheme.smallSpacing,
                 Row(
@@ -143,6 +154,7 @@ class _TravelInfoBetweenState extends State<TravelInfoBetween> {
                       options.map((t) {
                         final option = transportInfo[t];
                         if (option == null) return const SizedBox.shrink();
+
                         final isSelected = t == selectedTransport;
 
                         return Expanded(

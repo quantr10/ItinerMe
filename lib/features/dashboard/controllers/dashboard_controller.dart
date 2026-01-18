@@ -14,14 +14,12 @@ class DashboardController extends ChangeNotifier {
     loadTrips();
   }
 
-  // ================= LOAD =================
-
+  // LOAD DASHBOARD TRIPS
   Future<void> loadTrips() async {
     _state = _state.copyWith(isLoading: true);
     notifyListeners();
 
     final result = await dashboardService.loadTrips();
-
     final sorted = _sort(result.trips, SortOption.name, SortOrder.ascending);
 
     _state = _state.copyWith(
@@ -34,8 +32,7 @@ class DashboardController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ================= SEARCH =================
-
+  // SEARCH TRIPS
   void search(String query) {
     final lower = query.toLowerCase();
 
@@ -52,11 +49,11 @@ class DashboardController extends ChangeNotifier {
       isSearching: query.isNotEmpty,
       displayedTrips: _sort(filtered, _state.sortOption, _state.sortOrder),
     );
+
     notifyListeners();
   }
 
-  // ================= SORT =================
-
+  // SORT TRIPS
   void sort(SortOption option, SortOrder order) {
     _state = _state.copyWith(
       sortOption: option,
@@ -66,19 +63,17 @@ class DashboardController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ================= TOGGLE SAVE =================
-
+  // TOGGLE SAVE / UNSAVE TRIP
   Future<void> toggleSaveTrip(String tripId) async {
     final updated = await dashboardService.toggleSaveTrip(tripId: tripId);
-
     _state = _state.copyWith(savedTripIds: updated);
     notifyListeners();
   }
 
-  // ================= LOCAL SORT =================
-
+  // LOCAL SORT HELPER
   List<Trip> _sort(List<Trip> trips, SortOption option, SortOrder order) {
     final list = List<Trip>.from(trips);
+
     list.sort((a, b) {
       int cmp;
       switch (option) {
@@ -94,6 +89,7 @@ class DashboardController extends ChangeNotifier {
       }
       return order == SortOrder.ascending ? cmp : -cmp;
     });
+
     return list;
   }
 }

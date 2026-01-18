@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:itinerme/core/services/dashboard_service.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/services/dashboard_service.dart';
 import '../../../core/widgets/main_scaffold.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/enums/sort_enums.dart';
@@ -28,23 +28,23 @@ class DashboardScreen extends StatelessWidget {
               auth: FirebaseAuth.instance,
             ),
           ),
-
-      child: const _DashboardViewState(),
+      child: const _DashboardView(),
     );
   }
 }
 
-class _DashboardViewState extends StatefulWidget {
-  const _DashboardViewState();
+class _DashboardView extends StatefulWidget {
+  const _DashboardView();
 
   @override
-  State<_DashboardViewState> createState() => _DashboardViewStateState();
+  State<_DashboardView> createState() => _DashboardViewState();
 }
 
-class _DashboardViewStateState extends State<_DashboardViewState> {
+class _DashboardViewState extends State<_DashboardView> {
   final _searchController = TextEditingController();
   final _formatter = DateFormat('MMM d');
 
+  // DASHBOARD MAIN VIEW
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<DashboardController>();
@@ -58,11 +58,14 @@ class _DashboardViewStateState extends State<_DashboardViewState> {
             padding: AppTheme.defaultPadding,
             child: Column(
               children: [
+                // ===== SEARCH BAR =====
                 DashboardSearchBar(
                   controller: _searchController,
                   onChanged: controller.search,
                 ),
                 AppTheme.smallSpacing,
+
+                // ===== SORT BAR =====
                 DashboardSortBar(
                   option: state.sortOption,
                   order: state.sortOrder,
@@ -75,7 +78,10 @@ class _DashboardViewStateState extends State<_DashboardViewState> {
                             : SortOrder.ascending,
                       ),
                 ),
+
                 AppTheme.mediumSpacing,
+
+                // ===== TRIP LIST =====
                 Expanded(
                   child: DashboardTripList(
                     state: state,
@@ -87,6 +93,8 @@ class _DashboardViewStateState extends State<_DashboardViewState> {
             ),
           ),
         ),
+
+        // ===== LOADING OVERLAY =====
         if (state.isLoading) Positioned.fill(child: AppTheme.loadingScreen()),
       ],
     );

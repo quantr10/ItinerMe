@@ -1,5 +1,3 @@
-// lib/core/services/account_service.dart
-
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,6 +18,7 @@ class AccountService {
     ImagePicker? picker,
   }) : picker = picker ?? ImagePicker();
 
+  // PICK & UPLOAD AVATAR
   Future<String?> pickAndUploadAvatar(String userId) async {
     final file = await picker.pickImage(source: ImageSource.gallery);
     if (file == null) return null;
@@ -38,6 +37,7 @@ class AccountService {
     return url;
   }
 
+  // LOGOUT
   Future<void> logout() async {
     await auth.signOut();
   }
